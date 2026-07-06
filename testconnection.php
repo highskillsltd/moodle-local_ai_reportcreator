@@ -45,10 +45,10 @@ if (empty(trim($middleware_url))) {
     exit;
 }
 
-// Derive ping URL: swap /query suffix for /ping (lightweight auth-only endpoint)
+// Derive ping URL: swap /query suffix for /ping (lightweight auth-only endpoint).
 $ping_url = preg_replace('#/query$#i', '/ping', rtrim($middleware_url, '/'));
 if ($ping_url === rtrim($middleware_url, '/')) {
-    // No /query suffix found — append /ping as a fallback
+    // No /query suffix found — append /ping as a fallback.
     $ping_url = rtrim($middleware_url, '/') . '/ping';
 }
 

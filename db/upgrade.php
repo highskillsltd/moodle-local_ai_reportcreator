@@ -22,8 +22,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-function xmldb_local_ai_reportcreator_upgrade($oldversion)
-{
+function xmldb_local_ai_reportcreator_upgrade($oldversion) {
     global $DB;
 
     if ($oldversion < 2024010104) {

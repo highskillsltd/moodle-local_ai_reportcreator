@@ -36,7 +36,7 @@ $PAGE->set_pagelayout('standard');
 
 echo $OUTPUT->header();
 
-// Create button
+// Create button.
 echo '<div class="mb-3">';
 echo html_writer::link(
     new moodle_url('/local/ai_reportcreator/create.php'),

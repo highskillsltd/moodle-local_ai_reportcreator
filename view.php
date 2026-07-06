@@ -44,7 +44,7 @@ $PAGE->navbar->add(
 );
 $PAGE->navbar->add(htmlspecialchars($record->name, ENT_QUOTES));
 
-// Validate SQL is read-only before executing
+// Validate SQL is read-only before executing.
 $sqlerror = null;
 $rows     = [];
 
@@ -58,19 +58,19 @@ if (!local_ai_reportcreator_validate_sql_readonly($record->sql_query)) {
     }
 }
 
-// Parse semantics
+// Parse semantics.
 $semantics     = json_decode($record->semantics_json, true) ?: [];
 $template_type = $record->template_type;
 
-// Build rendered output
+// Build rendered output.
 $output = '';
 if ($sqlerror) {
     $output = '<div class="alert alert-danger">' . htmlspecialchars($sqlerror, ENT_QUOTES) . '</div>';
-} elseif (in_array($template_type, ['bar', 'line', 'pie', 'doughnut', 'radar'], true)) {
+} else if (in_array($template_type, ['bar', 'line', 'pie', 'doughnut', 'radar'], true)) {
     $data   = array_values(array_map(fn($r) => (array) $r, $rows));
     $output = '<script>window.__DATA__ = ' . json_encode($data) . ';</script>' . "\n"
             . $record->template_html;
-} elseif ($template_type === 'report') {
+} else if ($template_type === 'report') {
     $columns = $semantics['columns'] ?? [];
     $tbody   = '';
     foreach ($rows as $row) {
@@ -83,7 +83,7 @@ if ($sqlerror) {
         $tbody .= '</tr>';
     }
     $output = str_replace('{{ROWS}}', $tbody, $record->template_html);
-} elseif ($template_type === 'dashboard') {
+} else if ($template_type === 'dashboard') {
     $columns   = $semantics['columns'] ?? [];
     $tbody     = '';
     foreach ($rows as $row) {
@@ -105,12 +105,12 @@ if ($sqlerror) {
     $output = $record->template_html;
 }
 
-// ── Page output ────────────────────────────────────────────────────────────
+// Page output.
 echo $OUTPUT->header();
 
 echo $output;
 
-// Embed panel
+// Embed panel.
 $embed_url  = (new moodle_url('/local/ai_reportcreator/embed.php', [
     'id'    => $record->id,
     'token' => $record->embed_token,
@@ -158,7 +158,7 @@ echo <<<JS
 </script>
 JS;
 
-// Action buttons
+// Action buttons.
 echo '<div class="mt-3 mb-4">';
 echo html_writer::link(
     new moodle_url('/local/ai_reportcreator/edit.php', ['id' => $id]),

@@ -49,18 +49,18 @@ $PAGE->navbar->add(get_string('viewsql', 'local_ai_reportcreator'));
 
 echo $OUTPUT->header();
 
-// Natural language request note
+// Natural language request note.
 echo '<div class="alert alert-info">';
 echo '<strong>Request:</strong> ' . htmlspecialchars($record->nl_request, ENT_QUOTES);
 echo '</div>';
 
-// SQL block
+// SQL block.
 echo '<pre class="bg-light border rounded p-3" style="white-space:pre-wrap;word-break:break-all;">';
 echo '<code style="font-family:monospace;">';
 echo htmlspecialchars($record->sql_query, ENT_QUOTES);
 echo '</code></pre>';
 
-// Back button
+// Back button.
 echo html_writer::link(
     new moodle_url('/local/ai_reportcreator/view.php', ['id' => $id]),
     get_string('back', 'local_ai_reportcreator'),

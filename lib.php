@@ -33,18 +33,21 @@ defined('MOODLE_INTERNAL') || die();
  * @param string $sql The SQL string to validate.
  * @return bool True if the SQL is read-only, false if it contains write/DDL keywords.
  */
-function local_ai_reportcreator_validate_sql_readonly(string $sql): bool
-{
-    // Strip block comments /* ... */
+function local_ai_reportcreator_validate_sql_readonly(string $sql): bool {
+    // Strip block comments /* ... */.
     $clean = preg_replace('/\/\*.*?\*\//s', ' ', $sql);
+
     // Strip line comments -- ...
     $clean = preg_replace('/--[^\n]*/', ' ', $clean);
-    // Reject any write or DDL keyword found as a whole word
-    if (preg_match(
-        '/\b(INSERT|UPDATE|DELETE|DROP|ALTER|CREATE|TRUNCATE|REPLACE|EXEC|EXECUTE|CALL|GRANT|REVOKE|LOCK|MERGE)\b/i',
-        $clean
-    )) {
+
+    // Define patterns to block write/DDL operations.
+    $forbiddenPatterns = '/\b(INSERT|UPDATE|DELETE|DROP|ALTER|CREATE|TRUNCATE|REPLACE|' .
+                         'EXEC|EXECUTE|CALL|GRANT|REVOKE|LOCK|MERGE)\b/i';
+
+    // Reject any write or DDL keyword found as a whole word.
+    if (preg_match($forbiddenPatterns, $clean)) {
         return false;
     }
+
     return true;
 }

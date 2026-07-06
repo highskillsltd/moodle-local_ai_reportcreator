@@ -55,7 +55,7 @@ if ($hassiteconfig) {
         PARAM_TEXT
     ));
 
-    // Navigation link: Site administration → Reports → AI Reports → AI Report Creator
+    // Navigation link: Site administration → Reports → AI Reports → AI Report Creator.
     $ADMIN->add('aireports', new admin_externalpage(
         'local_ai_reportcreator_index',
         get_string('pluginname', 'local_ai_reportcreator'),
@@ -63,7 +63,7 @@ if ($hassiteconfig) {
         'local/ai_reportcreator:manage'
     ));
 
-    // Test connection button (display-only, no stored value)
+    // Test connection button (display-only, no stored value).
     require_once($CFG->dirroot . '/local/ai_reportcreator/classes/admin/setting_testconnection.php');
     $settings->add(new \local_ai_reportcreator\admin\setting_testconnection());
 }

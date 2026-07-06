@@ -24,21 +24,21 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-// Core plugin strings
+// Core plugin strings.
 $string['pluginname']            = 'AI Report Creator';
 $string['manage']                = 'Manage AI reports';
 $string['ai_reportcreator:manage']  = 'Generate AI reports';
 $string['role:ai_reportcreator']      = 'AI Report creator';
 $string['role:ai_reportcreator_desc'] = 'Can generate AI-powered reports. Based on the Manager archetype; assignable at system or category level by a site administrator only.';
 
-// Pages / navigation
+// Pages / navigation.
 $string['aireports']             = 'AI Reports';
 $string['createreport']          = 'Create new report';
 $string['reportlist']            = 'My Reports';
 $string['back']                  = 'Back';
 $string['viewreport']            = 'View Report';
 
-// Form fields
+// Form fields.
 $string['reportname']            = 'Report name';
 $string['nlrequest']             = 'Describe what you want to see';
 $string['nlrequest_placeholder'] = 'e.g. Show me the number of active enrollments per course for the last 30 days, course custom fields = isfrontal,isrequired';
@@ -46,7 +46,7 @@ $string['nlrequest_help']        = 'Tips for a good prompt:<ul><li>Start with wh
 $string['templatetype']          = 'Output type';
 $string['generate']              = 'Generate';
 
-// Template type options
+// Template type options.
 $string['type_report']           = 'Report (table)';
 $string['type_dashboard']        = 'Dashboard (stat cards + table)';
 $string['type_bar']              = 'Chart — Bar';
@@ -55,7 +55,7 @@ $string['type_pie']              = 'Chart — Pie';
 $string['type_doughnut']         = 'Chart — Doughnut';
 $string['type_radar']            = 'Chart — Radar';
 
-// Actions
+// Actions.
 $string['editreport']            = 'Edit';
 $string['exportcsv']             = 'Export CSV';
 $string['viewsql']               = 'View SQL';
@@ -63,45 +63,45 @@ $string['viewsqlfor']            = 'SQL Query — {$a}';
 $string['deletereport']          = 'Delete';
 $string['embed']                 = 'Embed';
 
-// Edit page
+// Edit page.
 $string['editreporttitle']       = 'Edit Report';
 $string['savereport']            = 'Save changes';
 $string['reportupdated']         = 'Report updated successfully.';
 
-// Table column headers
+// Table column headers.
 $string['col_name']              = 'Name';
 $string['col_type']              = 'Type';
 $string['col_created']           = 'Created';
 $string['col_actions']           = 'Actions';
 
-// Messages
+// Messages.
 $string['reportdeleted']         = 'Report deleted successfully.';
 $string['confirmdelete']         = 'Are you sure you want to delete this report?';
 $string['noreports']             = 'No reports yet. Create your first report.';
 
-// Error strings
+// Error strings.
 $string['sqlerror']              = 'The SQL query returned an error: {$a}';
 $string['apierror']              = 'The AI middleware returned an error: {$a}';
 $string['sqlreadonlyerror']      = 'The SQL query contains write or DDL statements and cannot be executed for safety reasons.';
 
-// Admin settings
+// Admin settings.
 $string['middlewareurl']         = 'Middleware endpoint URL';
 $string['middlewareurl_desc']    = 'Full URL including the tenant UUID path segment. Format: https://your-host/api/{tenant-uuid}/query — e.g. https://api.example.com/api/550e8400-e29b-41d4-a716-446655440000/query';
 $string['apikey']                = 'API key (Bearer token)';
 $string['apikey_desc']           = '64-character hex API key shown in the middleware admin panel after creating or regenerating the tenant.';
 $string['moodleversion']         = 'Moodle version sent to middleware';
 
-// Test connection
+// Test connection.
 $string['testconnection']        = 'Test Connection';
 $string['testconnection_success'] = 'Connection successful';
 $string['testconnection_fail']   = 'Connection failed';
 
-// Embed
+// Embed.
 $string['embedcode']             = 'Embed this report';
 $string['embedinstructions']     = 'Copy the code below and paste it into any webpage to embed this report.';
 $string['copycode']              = 'Copy';
 
-// AI progress / stats
+// AI progress / stats.
 $string['generating']            = 'Calling AI middleware...';
 $string['progress_calling']      = 'Calling AI middleware…';
 $string['progress_processing']   = 'Processing your request…';

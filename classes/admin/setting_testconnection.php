@@ -32,15 +32,11 @@ namespace local_ai_reportcreator\admin;
  * @copyright  2026 Highskills and more <info@highskills.co.il>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-// phpcs:ignore Squiz.Classes.ValidClassName.NotCamelCaps
-class setting_testconnection extends \admin_setting
-{
-
+class setting_testconnection extends \admin_setting {
     /**
      * Constructor — registers the setting with a placeholder name (no stored value).
      */
-    public function __construct()
-    {
+    public function __construct() {
         parent::__construct(
             'local_ai_reportcreator/testconnection_placeholder',
             get_string('testconnection', 'local_ai_reportcreator'),
@@ -54,9 +50,7 @@ class setting_testconnection extends \admin_setting
      *
      * @return bool
      */
-    // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
-    public function get_setting()
-    {
+    public function get_setting() {
         return true;
     }
 
@@ -66,9 +60,7 @@ class setting_testconnection extends \admin_setting
      * @param mixed $data Form data (unused).
      * @return string Empty string indicating success.
      */
-    // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
-    public function write_setting($data)
-    {
+    public function write_setting($data) {
         return '';
     }
 
@@ -78,9 +70,7 @@ class setting_testconnection extends \admin_setting
      * @param string $query Search query (unused).
      * @return bool Always false.
      */
-    // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
-    public function is_related($query)
-    {
+    public function is_related($query) {
         return false;
     }
 
@@ -91,9 +81,7 @@ class setting_testconnection extends \admin_setting
      * @param string $query Admin search query (unused).
      * @return string HTML output.
      */
-    // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
-    public function output_html($data, $query = '')
-    {
+    public function output_html($data, $query = '') {
         global $CFG;
 
         $testurl     = $CFG->wwwroot . '/local/ai_reportcreator/testconnection.php';

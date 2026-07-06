@@ -36,16 +36,12 @@ require_once(__DIR__ . '/../lib.php');
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @covers ::local_ai_reportcreator_validate_sql_readonly
  */
-// phpcs:ignore Squiz.Classes.ValidClassName.NotCamelCaps
-class local_ai_reportcreator_lib_test extends advanced_testcase
-{
 
+class local_ai_reportcreator_lib_test extends advanced_testcase {
     /**
      * Plain SELECT statements are allowed.
      */
-    // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
-    public function test_select_is_allowed(): void
-    {
+    public function test_select_is_allowed(): void {
         $this->assertTrue(local_ai_reportcreator_validate_sql_readonly(
             'SELECT id, name FROM mdl_user WHERE deleted = 0'
         ));
@@ -54,9 +50,7 @@ class local_ai_reportcreator_lib_test extends advanced_testcase
     /**
      * SELECT with a subquery is allowed.
      */
-    // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
-    public function test_select_with_subquery_is_allowed(): void
-    {
+    public function test_select_with_subquery_is_allowed(): void {
         $this->assertTrue(local_ai_reportcreator_validate_sql_readonly(
             'SELECT * FROM mdl_course WHERE id IN (SELECT courseid FROM mdl_enrol)'
         ));
@@ -68,9 +62,7 @@ class local_ai_reportcreator_lib_test extends advanced_testcase
      * @dataProvider write_keyword_provider
      * @param string $sql SQL statement containing a write keyword.
      */
-    // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
-    public function test_write_keywords_are_rejected(string $sql): void
-    {
+    public function test_write_keywords_are_rejected(string $sql): void {
         $this->assertFalse(local_ai_reportcreator_validate_sql_readonly($sql));
     }
 
@@ -79,9 +71,7 @@ class local_ai_reportcreator_lib_test extends advanced_testcase
      *
      * @return array[]
      */
-    // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
-    public static function write_keyword_provider(): array
-    {
+    public static function write_keyword_provider(): array {
         return [
             'INSERT'   => ['INSERT INTO mdl_user (name) VALUES ("x")'],
             'UPDATE'   => ['UPDATE mdl_user SET deleted = 1'],
@@ -106,9 +96,7 @@ class local_ai_reportcreator_lib_test extends advanced_testcase
     /**
      * Write keywords inside block comments are stripped and must not trigger rejection.
      */
-    // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
-    public function test_block_comment_with_write_keyword_is_allowed(): void
-    {
+    public function test_block_comment_with_write_keyword_is_allowed(): void {
         $this->assertTrue(local_ai_reportcreator_validate_sql_readonly(
             "SELECT id FROM mdl_user /* DELETE FROM mdl_user */"
         ));
@@ -117,9 +105,7 @@ class local_ai_reportcreator_lib_test extends advanced_testcase
     /**
      * Write keywords on line comments are stripped and must not trigger rejection.
      */
-    // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
-    public function test_line_comment_with_write_keyword_is_allowed(): void
-    {
+    public function test_line_comment_with_write_keyword_is_allowed(): void {
         $this->assertTrue(local_ai_reportcreator_validate_sql_readonly(
             "SELECT id FROM mdl_user -- DROP TABLE mdl_user\nWHERE deleted = 0"
         ));
@@ -128,9 +114,7 @@ class local_ai_reportcreator_lib_test extends advanced_testcase
     /**
      * An empty string is considered safe (no write keywords present).
      */
-    // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
-    public function test_empty_string_is_allowed(): void
-    {
+    public function test_empty_string_is_allowed(): void {
         $this->assertTrue(local_ai_reportcreator_validate_sql_readonly(''));
     }
 }

@@ -34,14 +34,11 @@ require_once($CFG->libdir . '/formslib.php');
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 // phpcs:ignore Squiz.Classes.ValidClassName.NotCamelCaps
-class edit_form extends \moodleform
-{
-
+class edit_form extends \moodleform {
     /**
      * Defines the form fields: hidden id and editable report name.
      */
-    public function definition()
-    {
+    public function definition() {
         $mform  = $this->_form;
         $record = $this->_customdata;
 

@@ -34,14 +34,11 @@ require_once($CFG->libdir . '/formslib.php');
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 // phpcs:ignore Squiz.Classes.ValidClassName.NotCamelCaps
-class create_form extends \moodleform
-{
-
+class create_form extends \moodleform {
     /**
      * Defines the form fields: report name, natural language request, output type.
      */
-    public function definition()
-    {
+    public function definition() {
         $mform = $this->_form;
 
         $mform->addElement(

@@ -33,10 +33,7 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright  2026 Highskills and more <info@highskills.co.il>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-// phpcs:ignore Squiz.Classes.ValidClassName.NotCamelCaps
-class local_ai_reportcreator_report_crud_test extends advanced_testcase
-{
-
+class local_ai_reportcreator_report_crud_test extends advanced_testcase {
     /** @var string Table name used across tests. */
     const TABLE = 'local_ai_reportcreator_reports';
 
@@ -45,9 +42,7 @@ class local_ai_reportcreator_report_crud_test extends advanced_testcase
      *
      * @return stdClass
      */
-    // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
-    private function make_record(): stdClass
-    {
+    private function make_record(): stdClass {
         $record                  = new stdClass();
         $record->userid          = 2;
         $record->name            = 'Test report';
@@ -69,9 +64,7 @@ class local_ai_reportcreator_report_crud_test extends advanced_testcase
     /**
      * Inserting a record returns a positive integer id.
      */
-    // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
-    public function test_insert_returns_id(): void
-    {
+    public function test_insert_returns_id(): void {
         global $DB;
         $this->resetAfterTest();
 
@@ -84,9 +77,7 @@ class local_ai_reportcreator_report_crud_test extends advanced_testcase
     /**
      * A record can be read back by id with all fields intact.
      */
-    // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
-    public function test_read_back_matches_inserted_data(): void
-    {
+    public function test_read_back_matches_inserted_data(): void {
         global $DB;
         $this->resetAfterTest();
 
@@ -105,9 +96,7 @@ class local_ai_reportcreator_report_crud_test extends advanced_testcase
     /**
      * Deleting a record removes it from the database.
      */
-    // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
-    public function test_delete_removes_record(): void
-    {
+    public function test_delete_removes_record(): void {
         global $DB;
         $this->resetAfterTest();
 
@@ -120,9 +109,7 @@ class local_ai_reportcreator_report_crud_test extends advanced_testcase
     /**
      * Multiple records can be retrieved ordered by timecreated descending.
      */
-    // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
-    public function test_multiple_records_ordered(): void
-    {
+    public function test_multiple_records_ordered(): void {
         global $DB;
         $this->resetAfterTest();
 

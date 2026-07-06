@@ -21,9 +21,7 @@
  * @copyright  2026 Highskills and more <info@highskills.co.il>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-function xmldb_local_ai_reportcreator_install()
-{
+function xmldb_local_ai_reportcreator_install() {
     global $DB;
 
     if ($DB->record_exists('role', ['shortname' => 'ai_reportcreator'])) {

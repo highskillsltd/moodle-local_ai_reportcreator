@@ -45,7 +45,7 @@ if (!$record || !hash_equals($record->embed_token, $token)) {
     exit;
 }
 
-// Safety: only execute read-only SQL
+// Safety: only execute read-only SQL.
 if (!local_ai_reportcreator_validate_sql_readonly($record->sql_query)) {
     http_response_code(400);
     echo '<!DOCTYPE html><html><body><p style="color:red;font-family:sans-serif;">'
@@ -67,12 +67,12 @@ try {
 $semantics     = json_decode($record->semantics_json, true) ?: [];
 $template_type = $record->template_type;
 
-// Build rendered output — same logic as view.php
+// Build rendered output — same logic as view.php.
 if (in_array($template_type, ['bar', 'line', 'pie', 'doughnut', 'radar'], true)) {
     $data   = array_values(array_map(fn($r) => (array) $r, $rows));
     $output = '<script>window.__DATA__ = ' . json_encode($data) . ';</script>' . "\n"
             . $record->template_html;
-} elseif ($template_type === 'report') {
+} else if ($template_type === 'report') {
     $columns = $semantics['columns'] ?? [];
     $tbody   = '';
     foreach ($rows as $row) {
@@ -85,7 +85,7 @@ if (in_array($template_type, ['bar', 'line', 'pie', 'doughnut', 'radar'], true))
         $tbody .= '</tr>';
     }
     $output = str_replace('{{ROWS}}', $tbody, $record->template_html);
-} elseif ($template_type === 'dashboard') {
+} else if ($template_type === 'dashboard') {
     $columns   = $semantics['columns'] ?? [];
     $tbody     = '';
     foreach ($rows as $row) {
@@ -107,7 +107,7 @@ if (in_array($template_type, ['bar', 'line', 'pie', 'doughnut', 'radar'], true))
     $output = $record->template_html;
 }
 
-// Output bare HTML — allow embedding from any origin
+// Output bare HTML — allow embedding from any origin.
 header('Content-Type: text/html; charset=UTF-8');
 header('X-Frame-Options: ALLOWALL');
 header('Content-Security-Policy: frame-ancestors *');

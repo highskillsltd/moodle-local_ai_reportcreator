@@ -84,7 +84,7 @@ if ($formdata = $form->get_data()) {
                 ? $response['error']
                 : ('HTTP ' . ($info['http_code'] ?? 0) . ': ' . substr($response_raw, 0, 200));
         } else {
-            // Generate a cryptographically random embed token (40 hex chars)
+            // Generate a cryptographically random embed token (40 hex chars).
             $embed_token = bin2hex(random_bytes(20));
 
             $record                 = new stdClass();
@@ -101,7 +101,7 @@ if ($formdata = $form->get_data()) {
 
             $newid = $DB->insert_record('local_ai_reportcreator_reports', $record);
 
-            // Stats displayed once here — not persisted to DB
+            // Stats displayed once here — not persisted to DB.
             $success = [
                 'id'                => $newid,
                 'tokens_prompt'     => $response['tokens_used']['prompt'] ?? 0,
@@ -123,7 +123,7 @@ if ($apierror !== null) {
 }
 
 if (!empty($success)) {
-    // ── AI Generation Stats ────────────────────────────────────────────────
+    // AI Generation Stats .
     echo '<div class="card mt-4"><div class="card-body">';
     echo '<h5 class="card-title">' . get_string('aistats', 'local_ai_reportcreator') . '</h5>';
     echo '<div class="row g-2">';
@@ -143,7 +143,7 @@ if (!empty($success)) {
     }
     echo '</div></div></div>';
 
-    // ── View Report button ─────────────────────────────────────────────────
+    // View Report button .
     echo '<div class="mt-3">';
     echo html_writer::link(
         new moodle_url('/local/ai_reportcreator/view.php', ['id' => $success['id']]),
@@ -152,7 +152,7 @@ if (!empty($success)) {
     );
     echo '</div>';
 } else {
-    // Progress panel (hidden until form is submitted)
+    // Progress panel (hidden until form is submitted).
     echo '<div id="progress-panel" style="display:none;" class="card p-4 text-center my-4">';
     echo '<h4>' . get_string('generating', 'local_ai_reportcreator') . '</h4>';
     echo '<div class="progress mt-3" style="height:20px;">';
