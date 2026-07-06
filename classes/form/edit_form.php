@@ -24,8 +24,11 @@
 
 namespace local_ai_reportcreator\form;
 
+defined('MOODLE_INTERNAL') || die();
+
 require_once($CFG->libdir . '/formslib.php');
 
+// phpcs:ignore Squiz.Classes.ValidClassName.NotCamelCaps
 /**
  * Form definition for editing an existing report's name.
  *
@@ -33,7 +36,6 @@ require_once($CFG->libdir . '/formslib.php');
  * @copyright  2026 Highskills and more <info@highskills.co.il>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-// phpcs:ignore Squiz.Classes.ValidClassName.NotCamelCaps
 class edit_form extends \moodleform {
     /**
      * Defines the form fields: hidden id and editable report name.

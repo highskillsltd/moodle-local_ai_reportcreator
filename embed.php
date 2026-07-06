@@ -64,15 +64,15 @@ try {
     exit;
 }
 
-$semantics     = json_decode($record->semantics_json, true) ?: [];
-$template_type = $record->template_type;
+$semantics    = json_decode($record->semantics_json, true) ?: [];
+$templatetype = $record->template_type;
 
 // Build rendered output — same logic as view.php.
-if (in_array($template_type, ['bar', 'line', 'pie', 'doughnut', 'radar'], true)) {
+if (in_array($templatetype, ['bar', 'line', 'pie', 'doughnut', 'radar'], true)) {
     $data   = array_values(array_map(fn($r) => (array) $r, $rows));
     $output = '<script>window.__DATA__ = ' . json_encode($data) . ';</script>' . "\n"
             . $record->template_html;
-} else if ($template_type === 'report') {
+} else if ($templatetype === 'report') {
     $columns = $semantics['columns'] ?? [];
     $tbody   = '';
     foreach ($rows as $row) {
@@ -85,7 +85,7 @@ if (in_array($template_type, ['bar', 'line', 'pie', 'doughnut', 'radar'], true))
         $tbody .= '</tr>';
     }
     $output = str_replace('{{ROWS}}', $tbody, $record->template_html);
-} else if ($template_type === 'dashboard') {
+} else if ($templatetype === 'dashboard') {
     $columns   = $semantics['columns'] ?? [];
     $tbody     = '';
     foreach ($rows as $row) {
@@ -97,11 +97,11 @@ if (in_array($template_type, ['bar', 'line', 'pie', 'doughnut', 'radar'], true))
         }
         $tbody .= '</tr>';
     }
-    $first_row = !empty($rows) ? (array) reset($rows) : [];
-    $output    = str_replace('{{ROWS}}', $tbody, $record->template_html);
-    foreach ($semantics['highlight_columns'] ?? [] as $col_key) {
-        $val    = htmlspecialchars((string) ($first_row[$col_key] ?? '—'), ENT_QUOTES);
-        $output = str_replace('{{STAT_' . $col_key . '}}', $val, $output);
+    $firstrow = !empty($rows) ? (array) reset($rows) : [];
+    $output   = str_replace('{{ROWS}}', $tbody, $record->template_html);
+    foreach ($semantics['highlight_columns'] ?? [] as $colkey) {
+        $val    = htmlspecialchars((string) ($firstrow[$colkey] ?? '—'), ENT_QUOTES);
+        $output = str_replace('{{STAT_' . $colkey . '}}', $val, $output);
     }
 } else {
     $output = $record->template_html;

@@ -59,18 +59,18 @@ if ($confirmed && confirm_sesskey()) {
     );
 }
 
-$confirm_url = new moodle_url('/local/ai_reportcreator/delete.php', [
+$confirmurl = new moodle_url('/local/ai_reportcreator/delete.php', [
     'id'      => $id,
     'confirm' => 1,
     'sesskey' => sesskey(),
 ]);
-$cancel_url = new moodle_url('/local/ai_reportcreator/view.php', ['id' => $id]);
+$cancelurl = new moodle_url('/local/ai_reportcreator/view.php', ['id' => $id]);
 
 echo $OUTPUT->header();
 echo $OUTPUT->confirm(
     get_string('confirmdelete', 'local_ai_reportcreator')
         . ' <strong>' . htmlspecialchars($record->name, ENT_QUOTES) . '</strong>?',
-    $confirm_url,
-    $cancel_url
+    $confirmurl,
+    $cancelurl
 );
 echo $OUTPUT->footer();

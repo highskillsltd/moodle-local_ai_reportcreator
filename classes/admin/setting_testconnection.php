@@ -86,17 +86,17 @@ class setting_testconnection extends \admin_setting {
 
         $testurl     = $CFG->wwwroot . '/local/ai_reportcreator/testconnection.php';
         $sesskey     = sesskey();
-        $btn_label   = get_string('testconnection', 'local_ai_reportcreator');
-        $msg_ok      = addslashes(get_string('testconnection_success', 'local_ai_reportcreator'));
-        $msg_fail    = addslashes(get_string('testconnection_fail', 'local_ai_reportcreator'));
+        $btnlabel    = get_string('testconnection', 'local_ai_reportcreator');
+        $msgok       = addslashes(get_string('testconnection_success', 'local_ai_reportcreator'));
+        $msgfail     = addslashes(get_string('testconnection_fail', 'local_ai_reportcreator'));
 
         $html  = '<div class="form-item row">';
         $html .= '<div class="form-label col-sm-4 col-form-label d-flex pb-0 pr-md-0">';
-        $html .= htmlspecialchars($btn_label, ENT_QUOTES);
+        $html .= htmlspecialchars($btnlabel, ENT_QUOTES);
         $html .= '</div>';
         $html .= '<div class="form-setting col-sm-8">';
         $html .= '<button type="button" class="btn btn-secondary" id="local-ai-testconn-btn">';
-        $html .= htmlspecialchars($btn_label, ENT_QUOTES);
+        $html .= htmlspecialchars($btnlabel, ENT_QUOTES);
         $html .= '</button>';
         $html .= ' <span id="local-ai-testconn-result" class="align-middle ms-2"></span>';
         $html .= '</div></div>';
@@ -131,10 +131,10 @@ class setting_testconnection extends \admin_setting {
         .then(function (data) {
             btn.disabled = false;
             if (data.ok) {
-                result.textContent = '{$msg_ok}';
+                result.textContent = '{$msgok}';
                 result.className = 'align-middle ms-2 text-success fw-bold';
             } else {
-                result.textContent = '{$msg_fail}: ' + (data.error || 'HTTP ' + data.http_code);
+                result.textContent = '{$msgfail}: ' + (data.error || 'HTTP ' + data.http_code);
                 result.className = 'align-middle ms-2 text-danger';
             }
         })

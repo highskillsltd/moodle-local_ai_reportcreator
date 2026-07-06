@@ -22,8 +22,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Validates that a SQL string is read-only (SELECT only).
  *
@@ -41,11 +39,11 @@ function local_ai_reportcreator_validate_sql_readonly(string $sql): bool {
     $clean = preg_replace('/--[^\n]*/', ' ', $clean);
 
     // Define patterns to block write/DDL operations.
-    $forbiddenPatterns = '/\b(INSERT|UPDATE|DELETE|DROP|ALTER|CREATE|TRUNCATE|REPLACE|' .
+    $forbiddenpatterns = '/\b(INSERT|UPDATE|DELETE|DROP|ALTER|CREATE|TRUNCATE|REPLACE|' .
                          'EXEC|EXECUTE|CALL|GRANT|REVOKE|LOCK|MERGE)\b/i';
 
     // Reject any write or DDL keyword found as a whole word.
-    if (preg_match($forbiddenPatterns, $clean)) {
+    if (preg_match($forbiddenpatterns, $clean)) {
         return false;
     }
 

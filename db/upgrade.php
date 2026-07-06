@@ -22,6 +22,12 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+/**
+ * Upgrade steps for the local_ai_reportcreator plugin.
+ *
+ * @param int $oldversion The version we are upgrading from.
+ * @return bool Always true.
+ */
 function xmldb_local_ai_reportcreator_upgrade($oldversion) {
     global $DB;
 

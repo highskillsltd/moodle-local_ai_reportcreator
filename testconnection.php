@@ -35,39 +35,39 @@ require_sesskey();
 $context = context_system::instance();
 require_capability('local/ai_reportcreator:manage', $context);
 
-$middleware_url = required_param('middleware_url', PARAM_RAW);
-$api_password   = required_param('api_password', PARAM_RAW);
+$middlewareurl = required_param('middleware_url', PARAM_RAW);
+$apipassword   = required_param('api_password', PARAM_RAW);
 
 header('Content-Type: application/json');
 
-if (empty(trim($middleware_url))) {
+if (empty(trim($middlewareurl))) {
     echo json_encode(['ok' => false, 'error' => 'Middleware URL is empty.', 'http_code' => 0]);
     exit;
 }
 
 // Derive ping URL: swap /query suffix for /ping (lightweight auth-only endpoint).
-$ping_url = preg_replace('#/query$#i', '/ping', rtrim($middleware_url, '/'));
-if ($ping_url === rtrim($middleware_url, '/')) {
+$pingurl = preg_replace('#/query$#i', '/ping', rtrim($middlewareurl, '/'));
+if ($pingurl === rtrim($middlewareurl, '/')) {
     // No /query suffix found — append /ping as a fallback.
-    $ping_url = rtrim($middleware_url, '/') . '/ping';
+    $pingurl = rtrim($middlewareurl, '/') . '/ping';
 }
 
 $curl = new curl();
 $curl->setHeader([
-    'Authorization: Bearer ' . $api_password,
+    'Authorization: Bearer ' . $apipassword,
 ]);
 
-$response_raw = $curl->get($ping_url);
-$info         = $curl->get_info();
-$http_code    = (int) ($info['http_code'] ?? 0);
+$responseraw = $curl->get($pingurl);
+$info        = $curl->get_info();
+$httpcode    = (int) ($info['http_code'] ?? 0);
 
-if ($http_code === 200) {
-    echo json_encode(['ok' => true, 'http_code' => $http_code]);
+if ($httpcode === 200) {
+    echo json_encode(['ok' => true, 'http_code' => $httpcode]);
 } else {
-    $response = json_decode($response_raw, true);
-    $error    = $response['error'] ?? $response['detail'] ?? substr($response_raw, 0, 300);
+    $response = json_decode($responseraw, true);
+    $error    = $response['error'] ?? $response['detail'] ?? substr($responseraw, 0, 300);
     if (empty($error)) {
-        $error = 'HTTP ' . $http_code;
+        $error = 'HTTP ' . $httpcode;
     }
-    echo json_encode(['ok' => false, 'error' => $error, 'http_code' => $http_code]);
+    echo json_encode(['ok' => false, 'error' => $error, 'http_code' => $httpcode]);
 }

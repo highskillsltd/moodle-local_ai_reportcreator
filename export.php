@@ -42,21 +42,21 @@ if (!local_ai_reportcreator_validate_sql_readonly($record->sql_query)) {
 
 $rows      = $DB->get_records_sql($record->sql_query);
 $semantics = json_decode($record->semantics_json, true) ?: [];
-$first_row = !empty($rows) ? (array) reset($rows) : [];
-$keys      = array_keys($first_row);
+$firstrow  = !empty($rows) ? (array) reset($rows) : [];
+$keys      = array_keys($firstrow);
 
 // Build key → label map from semantics, fall back to raw column keys.
-$label_map = [];
+$labelmap = [];
 foreach ($semantics['columns'] ?? [] as $col) {
-    $label_map[$col['key']] = $col['label'];
+    $labelmap[$col['key']] = $col['label'];
 }
-$headers = array_map(fn($k) => $label_map[$k] ?? $k, $keys);
+$headers = array_map(fn($k) => $labelmap[$k] ?? $k, $keys);
 
-$safe_name = clean_filename($record->name);
+$safename = clean_filename($record->name);
 
 if ($format === 'csv') {
     header('Content-Type: text/csv; charset=utf-8');
-    header('Content-Disposition: attachment; filename="' . $safe_name . '.csv"');
+    header('Content-Disposition: attachment; filename="' . $safename . '.csv"');
     $out = fopen('php://output', 'w');
     fwrite($out, "\xEF\xBB\xBF"); // UTF-8 BOM so Excel opens the file correctly.
     fputcsv($out, $headers, ',', '"', '\\');

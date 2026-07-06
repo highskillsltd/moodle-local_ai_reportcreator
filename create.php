@@ -51,41 +51,41 @@ $apierror = null;
 $success  = null;
 
 if ($formdata = $form->get_data()) {
-    $middleware_url = get_config('local_ai_reportcreator', 'middleware_url');
-    $api_password   = get_config('local_ai_reportcreator', 'api_key');
-    $moodle_version = get_config('local_ai_reportcreator', 'moodle_version')
+    $middlewareurl = get_config('local_ai_reportcreator', 'middleware_url');
+    $apipassword   = get_config('local_ai_reportcreator', 'api_key');
+    $moodleversion = get_config('local_ai_reportcreator', 'moodle_version')
         ?: (isset($CFG->release) ? $CFG->release : '4.3');
 
-    if (empty($middleware_url)) {
+    if (empty($middlewareurl)) {
         $apierror = 'Middleware URL is not configured. Please check plugin settings.';
     } else {
         $payload = json_encode([
             'request'        => $formdata->nl_request,
             'system'         => 'moodle',
-            'system_version' => $moodle_version,
+            'system_version' => $moodleversion,
             'template_type'  => $formdata->template_type,
         ]);
 
         $curl = new curl();
         $curl->setHeader([
             'Content-Type: application/json',
-            'Authorization: Bearer ' . $api_password,
+            'Authorization: Bearer ' . $apipassword,
         ]);
 
-        $t_start       = microtime(true);
-        $response_raw  = $curl->post($middleware_url, $payload);
-        $generation_ms = (int) round((microtime(true) - $t_start) * 1000);
+        $tstart       = microtime(true);
+        $responseraw  = $curl->post($middlewareurl, $payload);
+        $generationms = (int) round((microtime(true) - $tstart) * 1000);
 
         $info     = $curl->get_info();
-        $response = json_decode($response_raw, true);
+        $response = json_decode($responseraw, true);
 
         if (($info['http_code'] ?? 0) !== 200 || empty($response['sql_query'])) {
             $apierror = isset($response['error'])
                 ? $response['error']
-                : ('HTTP ' . ($info['http_code'] ?? 0) . ': ' . substr($response_raw, 0, 200));
+                : ('HTTP ' . ($info['http_code'] ?? 0) . ': ' . substr($responseraw, 0, 200));
         } else {
             // Generate a cryptographically random embed token (40 hex chars).
-            $embed_token = bin2hex(random_bytes(20));
+            $embedtoken = bin2hex(random_bytes(20));
 
             $record                 = new stdClass();
             $record->userid         = $USER->id;
@@ -95,7 +95,7 @@ if ($formdata = $form->get_data()) {
             $record->sql_query      = $response['sql_query'];
             $record->template_html  = $response['template'] ?? '';
             $record->semantics_json = json_encode($response['semantics'] ?? []);
-            $record->embed_token    = $embed_token;
+            $record->embed_token    = $embedtoken;
             $record->timecreated    = time();
             $record->timemodified   = time();
 
@@ -107,7 +107,7 @@ if ($formdata = $form->get_data()) {
                 'tokens_prompt'     => $response['tokens_used']['prompt'] ?? 0,
                 'tokens_completion' => $response['tokens_used']['completion'] ?? 0,
                 'tokens_total'      => $response['tokens_used']['total'] ?? 0,
-                'generation_ms'     => $generation_ms,
+                'generation_ms'     => $generationms,
             ];
         }
     }
@@ -167,7 +167,7 @@ if (!empty($success)) {
     $form->display();
     echo '</div>';
 
-    $progress_messages = json_encode([
+    $progressmessages = json_encode([
         get_string('progress_calling', 'local_ai_reportcreator'),
         get_string('progress_processing', 'local_ai_reportcreator'),
         get_string('progress_sql', 'local_ai_reportcreator'),
@@ -177,7 +177,7 @@ if (!empty($success)) {
 
     echo '<script>';
     echo '(function () {';
-    echo "    var messages = {$progress_messages};";
+    echo "    var messages = {$progressmessages};";
     echo '    var formContainer = document.getElementById(\'form-container\');';
     echo '    var form = formContainer ? formContainer.querySelector(\'form\') : null;';
     echo '    if (!form) return;';

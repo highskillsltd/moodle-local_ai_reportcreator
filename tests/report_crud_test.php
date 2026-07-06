@@ -24,8 +24,6 @@
 
 namespace local_ai_reportcreator;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Tests the report record lifecycle (insert, read, delete).
  *
@@ -33,9 +31,9 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright  2026 Highskills and more <info@highskills.co.il>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class local_ai_reportcreator_report_crud_test extends advanced_testcase {
+class report_crud_test extends advanced_testcase {
     /** @var string Table name used across tests. */
-    const TABLE = 'local_ai_reportcreator_reports';
+    public const TABLE = 'local_ai_reportcreator_reports';
 
     /**
      * Build a minimal valid report record object.
