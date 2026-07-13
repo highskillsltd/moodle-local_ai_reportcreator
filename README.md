@@ -9,7 +9,7 @@ Generate data reports and charts from plain-language descriptions. Type what you
 
 ## Activation
 
-[Click here to request activation](mailto:info@highskills.co.il?subject=ACTIVATION%20local_ai_reportcreator)
+To get your activation endpoint and API key, please [complete the setup process here](https://www.highskills.co.il/ai/moodle-ai-report-creator-o9geb).
 
 ## Features
 
