@@ -55,6 +55,14 @@ if ($hassiteconfig) {
         PARAM_TEXT
     ));
 
+    $settings->add(new admin_setting_configtext(
+        'local_ai_reportcreator/stream_timeout',
+        get_string('streamtimeout', 'local_ai_reportcreator'),
+        get_string('streamtimeout_desc', 'local_ai_reportcreator'),
+        '300',
+        PARAM_INT
+    ));
+
     // Navigation link: Site administration → Reports → AI Reports → AI Report Creator.
     $ADMIN->add('aireports', new admin_externalpage(
         'local_ai_reportcreator_index',

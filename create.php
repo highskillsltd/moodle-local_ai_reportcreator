@@ -47,152 +47,61 @@ if ($form->is_cancelled()) {
     redirect(new moodle_url('/local/ai_reportcreator/index.php'));
 }
 
-$apierror = null;
-$success  = null;
-
-if ($formdata = $form->get_data()) {
-    $middlewareurl = get_config('local_ai_reportcreator', 'middleware_url');
-    $apipassword   = get_config('local_ai_reportcreator', 'api_key');
-    $moodleversion = get_config('local_ai_reportcreator', 'moodle_version')
-        ?: (isset($CFG->release) ? $CFG->release : '4.3');
-
-    if (empty($middlewareurl)) {
-        $apierror = 'Middleware URL is not configured. Please check plugin settings.';
-    } else {
-        $payload = json_encode([
-            'request'        => $formdata->nl_request,
-            'system'         => 'moodle',
-            'system_version' => $moodleversion,
-            'template_type'  => $formdata->template_type,
-        ]);
-
-        $curl = new curl();
-        $curl->setHeader([
-            'Content-Type: application/json',
-            'Authorization: Bearer ' . $apipassword,
-        ]);
-
-        $tstart       = microtime(true);
-        $responseraw  = $curl->post($middlewareurl, $payload);
-        $generationms = (int) round((microtime(true) - $tstart) * 1000);
-
-        $info     = $curl->get_info();
-        $response = json_decode($responseraw, true);
-
-        if (($info['http_code'] ?? 0) !== 200 || empty($response['sql_query'])) {
-            $apierror = isset($response['error'])
-                ? $response['error']
-                : ('HTTP ' . ($info['http_code'] ?? 0) . ': ' . substr($responseraw, 0, 200));
-        } else {
-            // Generate a cryptographically random embed token (40 hex chars).
-            $embedtoken = bin2hex(random_bytes(20));
-
-            $record                 = new stdClass();
-            $record->userid         = $USER->id;
-            $record->name           = $formdata->name;
-            $record->nl_request     = $formdata->nl_request;
-            $record->template_type  = $formdata->template_type;
-            $record->sql_query      = $response['sql_query'];
-            $record->template_html  = $response['template'] ?? '';
-            $record->semantics_json = json_encode($response['semantics'] ?? []);
-            $record->embed_token    = $embedtoken;
-            $record->timecreated    = time();
-            $record->timemodified   = time();
-
-            $newid = $DB->insert_record('local_ai_reportcreator_reports', $record);
-
-            // Stats displayed once here — not persisted to DB.
-            $success = [
-                'id'                => $newid,
-                'tokens_prompt'     => $response['tokens_used']['prompt'] ?? 0,
-                'tokens_completion' => $response['tokens_used']['completion'] ?? 0,
-                'tokens_total'      => $response['tokens_used']['total'] ?? 0,
-                'generation_ms'     => $generationms,
-            ];
-        }
-    }
-}
+$PAGE->requires->js_call_amd('local_ai_reportcreator/create', 'init', [
+    [
+        'sesskey'   => sesskey(),
+        'streamUrl' => (new moodle_url('/local/ai_reportcreator/stream.php', ['action' => 'stream']))->out(false),
+        'saveUrl'   => (new moodle_url('/local/ai_reportcreator/stream.php', ['action' => 'save']))->out(false),
+    ],
+]);
 
 echo $OUTPUT->header();
 
-if ($apierror !== null) {
-    echo $OUTPUT->notification(
-        get_string('apierror', 'local_ai_reportcreator', $apierror),
-        'error'
-    );
+$client = new \local_ai_reportcreator\ApiClient();
+if (!$client->is_configured()) {
+    echo $OUTPUT->notification(get_string('api_not_configured', 'local_ai_reportcreator'), 'warning');
 }
 
-if (!empty($success)) {
-    // AI Generation Stats .
-    echo '<div class="card mt-4"><div class="card-body">';
-    echo '<h5 class="card-title">' . get_string('aistats', 'local_ai_reportcreator') . '</h5>';
-    echo '<div class="row g-2">';
-    $stats = [
-        get_string('tokenprompt', 'local_ai_reportcreator') => number_format($success['tokens_prompt']),
-        get_string('tokencompletion', 'local_ai_reportcreator') => number_format($success['tokens_completion']),
-        get_string('tokentotal', 'local_ai_reportcreator') => number_format($success['tokens_total']),
-        get_string('generationtime', 'local_ai_reportcreator') =>
-        number_format($success['generation_ms'] / 1000, 2) . ' s',
-    ];
-    foreach ($stats as $label => $value) {
-        echo '<div class="col-sm-3">';
-        echo '<div class="border rounded p-2 text-center">';
-        echo '<div class="fs-5 fw-bold">' . htmlspecialchars($value, ENT_QUOTES) . '</div>';
-        echo '<div class="text-muted small">' . htmlspecialchars($label, ENT_QUOTES) . '</div>';
-        echo '</div></div>';
-    }
-    echo '</div></div></div>';
+echo '<div class="row g-3 align-items-start">';
 
-    // View Report button .
-    echo '<div class="mt-3">';
-    echo html_writer::link(
-        new moodle_url('/local/ai_reportcreator/view.php', ['id' => $success['id']]),
-        get_string('viewreport', 'local_ai_reportcreator'),
-        ['class' => 'btn btn-primary']
-    );
-    echo '</div>';
-} else {
-    // Progress panel (hidden until form is submitted).
-    echo '<div id="progress-panel" style="display:none;" class="card p-4 text-center my-4">';
-    echo '<h4>' . get_string('generating', 'local_ai_reportcreator') . '</h4>';
-    echo '<div class="progress mt-3" style="height:20px;">';
-    echo '<div class="progress-bar progress-bar-striped progress-bar-animated bg-primary" '
-        . 'role="progressbar" style="width:100%"></div>';
-    echo '</div>';
-    echo '<p class="mt-3 text-muted" id="progress-status">'
-        . get_string('progress_calling', 'local_ai_reportcreator') . '</p>';
-    echo '</div>';
+echo '<div class="col-md-7">';
+echo '<div id="form-container">';
+$form->display();
+echo '</div>';
+echo '</div>';
 
-    echo '<div id="form-container">';
-    $form->display();
-    echo '</div>';
+echo '<div class="col-md-5">';
 
-    $progressmessages = json_encode([
-        get_string('progress_calling', 'local_ai_reportcreator'),
-        get_string('progress_processing', 'local_ai_reportcreator'),
-        get_string('progress_sql', 'local_ai_reportcreator'),
-        get_string('progress_template', 'local_ai_reportcreator'),
-        get_string('progress_almost', 'local_ai_reportcreator'),
-    ]);
+// Progress panel (hidden until the form is submitted).
+echo '<div id="progress-panel" class="card mb-3 d-none">';
+echo '<div class="card-header fw-semibold">' . get_string('generating', 'local_ai_reportcreator') . '</div>';
+echo '<div class="card-body p-0">';
+echo '<table class="table table-sm mb-0" id="progress-table"><tbody>';
 
-    echo '<script>';
-    echo '(function () {';
-    echo "    var messages = {$progressmessages};";
-    echo '    var formContainer = document.getElementById(\'form-container\');';
-    echo '    var form = formContainer ? formContainer.querySelector(\'form\') : null;';
-    echo '    if (!form) return;';
-    echo '    form.addEventListener(\'submit\', function () {';
-    echo '        formContainer.style.display = \'none\';';
-    echo '        document.getElementById(\'progress-panel\').style.display = \'block\';';
-    echo '        var idx = 0;';
-    echo '        setInterval(function () {';
-    echo '            idx = (idx + 1) % messages.length;';
-    echo '            var el = document.getElementById(\'progress-status\');';
-    echo '            if (el) el.textContent = messages[idx];';
-    echo '        }, 2000);';
-    echo '    });';
-    echo '})();';
-    echo '</script>';
+$progressrows = [
+    ['id' => 'row-sql', 'label' => get_string('agent_sql', 'local_ai_reportcreator')],
+    ['id' => 'row-template', 'label' => get_string('agent_template', 'local_ai_reportcreator')],
+];
+foreach ($progressrows as $row) {
+    echo '<tr id="' . $row['id'] . '">';
+    echo '<td class="ps-3 py-2 w-50">' . htmlspecialchars($row['label'], ENT_QUOTES) . '</td>';
+    echo '<td class="py-2"><span class="status-badge">'
+        . '<span class="spinner-grow spinner-grow-sm text-secondary" role="status"></span>'
+        . '</span></td>';
+    echo '<td class="py-2 text-end pe-3 text-muted small detail-cell"></td>';
+    echo '</tr>';
 }
+
+echo '</tbody></table>';
+echo '</div></div>';
+
+// Error banner (hidden until an error event).
+echo '<div id="error-panel" class="alert alert-danger d-none" role="alert">';
+echo '<strong>' . get_string('errorheading', 'local_ai_reportcreator') . ':</strong> ';
+echo '<span id="error-message"></span>';
+echo '</div>';
+
+echo '</div>'; // /.col-md-5
+echo '</div>'; // /.row
 
 echo $OUTPUT->footer();

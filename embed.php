@@ -17,33 +17,20 @@
 /**
  * Embed page — outputs a bare HTML document (no Moodle chrome) suitable for iframes.
  *
- * Access is gated by a per-record embed token instead of a Moodle session.
+ * Access requires a logged-in Moodle session.
  *
  * @package    local_ai_reportcreator
  * @copyright  2026 Highskills and more <info@highskills.co.il>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-define('NO_MOODLE_COOKIES', true);
 
 require_once(__DIR__ . '/../../config.php');
 require_once(__DIR__ . '/lib.php');
 
-$id    = required_param('id', PARAM_INT);
-$token = required_param('token', PARAM_ALPHANUM);
+require_login();
 
-$record = $DB->get_record('local_ai_reportcreator_reports', ['id' => $id]);
-
-
-if (!$record || !hash_equals($record->embed_token, $token)) {
-    http_response_code(403);
-
-    echo '<!DOCTYPE html><html><body>'
-        . '<p style="color:red;font-family:sans-serif;">'
-        . 'Invalid or expired embed token.'
-        . '</p></body></html>';
-
-    exit;
-}
+$id     = required_param('id', PARAM_INT);
+$record = $DB->get_record('local_ai_reportcreator_reports', ['id' => $id], '*', MUST_EXIST);
 
 // Safety: only execute read-only SQL.
 if (!local_ai_reportcreator_validate_sql_readonly($record->sql_query)) {

@@ -45,11 +45,14 @@ if (empty(trim($middlewareurl))) {
     exit;
 }
 
-// Derive ping URL: swap /query suffix for /ping (lightweight auth-only endpoint).
-$pingurl = preg_replace('#/query$#i', '/ping', rtrim($middlewareurl, '/'));
-if ($pingurl === rtrim($middlewareurl, '/')) {
-    // No /query suffix found — append /ping as a fallback.
-    $pingurl = rtrim($middlewareurl, '/') . '/ping';
+// Derive ping URL: replace the last path segment (task code, e.g. "report-creator")
+// with "ping" — matches the middleware's GET /api/v1/{tenant_id}/ping route.
+$trimmedurl = rtrim($middlewareurl, '/');
+$lastslash  = strrpos($trimmedurl, '/');
+if ($lastslash !== false) {
+    $pingurl = substr($trimmedurl, 0, $lastslash) . '/ping';
+} else {
+    $pingurl = $trimmedurl . '/ping';
 }
 
 $curl = new curl();

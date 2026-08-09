@@ -15,7 +15,7 @@ To get your activation endpoint and API key, please [complete the setup process 
 
 - **Natural language → SQL** — describe your report in plain text; the AI writes the query.
 - **Multiple output types** — table report, stat-card dashboard, bar/line/pie/doughnut/radar charts.
-- **Embeddable** — every report gets a token-authenticated iframe embed code for external pages.
+- **Embeddable** — every report gets an iframe embed code; viewers must be logged in to this Moodle site.
 - **Safe by design** — all generated SQL is validated as read-only before execution; write/DDL statements are always rejected.
 - **Hebrew (RTL) support** — full Hebrew translation included; Moodle handles RTL layout automatically.
 
@@ -98,7 +98,7 @@ Navigate to **AI Report Creator → Create new report** and fill in the descript
 
 1. Open any report and click **Embed** (or scroll to the embed panel at the bottom of the view page).
 2. Copy the `<iframe>` snippet and paste it into any webpage or Moodle HTML block.
-3. The embed endpoint (`embed.php`) is authenticated by a per-report token — no Moodle login required by the viewer.
+3. The embed endpoint (`embed.php`) requires the viewer to be logged in to this Moodle site.
 4. The iframe auto-resizes to its content height via `postMessage`.
 
 ---

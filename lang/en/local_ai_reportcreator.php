@@ -83,13 +83,19 @@ $string['noreports']             = 'No reports yet. Create your first report.';
 $string['sqlerror']              = 'The SQL query returned an error: {$a}';
 $string['apierror']              = 'The AI middleware returned an error: {$a}';
 $string['sqlreadonlyerror']      = 'The SQL query contains write or DDL statements and cannot be executed for safety reasons.';
+$string['curlerror']             = 'Could not reach the AI middleware: {$a}';
+$string['api_not_configured']    = 'The AI middleware is not configured. Please contact your site administrator.';
+$string['savingerror']           = 'The report was generated but could not be saved: {$a}';
+$string['errorheading']          = 'Error';
 
 // Admin settings.
 $string['middlewareurl']         = 'Middleware endpoint URL';
-$string['middlewareurl_desc']    = 'Full URL including the tenant UUID path segment. Format: https://your-host/api/{tenant-uuid}/query — e.g. https://api.example.com/api/550e8400-e29b-41d4-a716-446655440000/query';
+$string['middlewareurl_desc']    = 'Full URL including the tenant UUID path segment. Format: https://your-host/api/v1/{tenant-uuid}/report-creator — e.g. https://api.example.com/api/v1/550e8400-e29b-41d4-a716-446655440000/report-creator';
 $string['apikey']                = 'API key (Bearer token)';
 $string['apikey_desc']           = '64-character hex API key shown in the middleware admin panel after creating or regenerating the tenant.';
 $string['moodleversion']         = 'Moodle version sent to middleware';
+$string['streamtimeout']         = 'Stream timeout (seconds)';
+$string['streamtimeout_desc']    = 'Maximum time to wait for the middleware to finish streaming a report before giving up. Minimum 30 seconds.';
 
 // Test connection.
 $string['testconnection']        = 'Test Connection';
@@ -98,7 +104,7 @@ $string['testconnection_fail']   = 'Connection failed';
 
 // Embed.
 $string['embedcode']             = 'Embed this report';
-$string['embedinstructions']     = 'Copy the code below and paste it into any webpage to embed this report.';
+$string['embedinstructions']     = 'Copy the code below and paste it into any webpage to embed this report. Viewers must be logged in to this site to see it.';
 $string['copycode']              = 'Copy';
 
 // AI progress / stats.
@@ -113,3 +119,5 @@ $string['tokenprompt']           = 'Prompt tokens';
 $string['tokencompletion']       = 'Completion tokens';
 $string['tokentotal']            = 'Total tokens';
 $string['generationtime']        = 'Time taken';
+$string['agent_sql']             = 'SQL Agent';
+$string['agent_template']        = 'Template Agent';

@@ -83,13 +83,19 @@ $string['noreports']             = 'אין עדיין דוחות. צור את ה
 $string['sqlerror']              = 'שאילתת ה-SQL החזירה שגיאה: {$a}';
 $string['apierror']              = 'ה-AI middleware החזיר שגיאה: {$a}';
 $string['sqlreadonlyerror']      = 'שאילתת ה-SQL מכילה פקודות כתיבה או DDL ולא ניתן להריץ אותה מטעמי אבטחה.';
+$string['curlerror']             = 'לא ניתן להתחבר ל-AI middleware: {$a}';
+$string['api_not_configured']    = 'ה-AI middleware אינו מוגדר. אנא פנה למנהל האתר.';
+$string['savingerror']           = 'הדוח נוצר אך לא ניתן היה לשמור אותו: {$a}';
+$string['errorheading']          = 'שגיאה';
 
 // Admin settings.
 $string['middlewareurl']         = 'כתובת URL של נקודת הקצה של ה-middleware';
-$string['middlewareurl_desc']    = 'כתובת URL מלאה הכוללת את מזהה ה-UUID של הדייר בנתיב. פורמט: https://your-host/api/{tenant-uuid}/query — לדוגמה: https://api.example.com/api/550e8400-e29b-41d4-a716-446655440000/query';
+$string['middlewareurl_desc']    = 'כתובת URL מלאה הכוללת את מזהה ה-UUID של הדייר בנתיב. פורמט: https://your-host/api/v1/{tenant-uuid}/report-creator — לדוגמה: https://api.example.com/api/v1/550e8400-e29b-41d4-a716-446655440000/report-creator';
 $string['apikey']                = 'מפתח API (Bearer token)';
 $string['apikey_desc']           = 'מפתח API בן 64 תווים הקסדצימליים, המוצג בלוח הניהול של ה-middleware לאחר יצירה או חידוש של הדייר.';
 $string['moodleversion']         = 'גרסת Moodle הנשלחת ל-middleware';
+$string['streamtimeout']         = 'זמן קצוב להזרמה (שניות)';
+$string['streamtimeout_desc']    = 'זמן ההמתנה המרבי לסיום הזרמת הדוח מה-middleware לפני ביטול. מינימום 30 שניות.';
 
 // Test connection.
 $string['testconnection']        = 'בדיקת חיבור';
@@ -98,7 +104,7 @@ $string['testconnection_fail']   = 'החיבור נכשל';
 
 // Embed.
 $string['embedcode']             = 'הטמע דוח זה';
-$string['embedinstructions']     = 'העתק את הקוד למטה והדבק אותו בכל דף אינטרנט כדי להטמיע את הדוח.';
+$string['embedinstructions']     = 'העתק את הקוד למטה והדבק אותו בכל דף אינטרנט כדי להטמיע את הדוח. הצופה חייב להיות מחובר לאתר זה כדי לצפות בו.';
 $string['copycode']              = 'העתק';
 
 // AI progress / stats.
@@ -113,3 +119,5 @@ $string['tokenprompt']           = 'טוקנים של הבקשה';
 $string['tokencompletion']       = 'טוקנים של התשובה';
 $string['tokentotal']            = 'סה"כ טוקנים';
 $string['generationtime']        = 'זמן עיבוד';
+$string['agent_sql']             = 'סוכן SQL';
+$string['agent_template']        = 'סוכן תבנית';

@@ -112,8 +112,7 @@ echo $output;
 
 // Embed panel.
 $embedurl  = (new moodle_url('/local/ai_reportcreator/embed.php', [
-    'id'    => $record->id,
-    'token' => $record->embed_token,
+    'id' => $record->id,
 ]))->out(false);
 $iframeid  = 'lai-embed-' . $record->id;
 $iframetag = '<iframe id="' . $iframeid . '" src="' . $embedurl
