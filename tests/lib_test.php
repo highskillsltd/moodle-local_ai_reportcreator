@@ -36,7 +36,7 @@ require_once(__DIR__ . '/../lib.php');
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @covers ::local_ai_reportcreator_validate_sql_readonly
  */
-class lib_test extends advanced_testcase {
+final class lib_test extends advanced_testcase {
     /**
      * Plain SELECT statements are allowed.
      */

@@ -31,7 +31,7 @@ namespace local_ai_reportcreator;
  * @copyright  2026 Highskills and more <info@highskills.co.il>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class report_crud_test extends advanced_testcase {
+final class report_crud_test extends advanced_testcase {
     /** @var string Table name used across tests. */
     public const TABLE = 'local_ai_reportcreator_rpts';
 
