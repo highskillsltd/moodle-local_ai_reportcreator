@@ -181,7 +181,7 @@ if ($action === 'save') {
     $record->timecreated       = time();
     $record->timemodified      = time();
 
-    $newid = $DB->insert_record('local_ai_reportcreator_reports', $record);
+    $newid = $DB->insert_record('local_ai_reportcreator_rpts', $record);
 
     echo json_encode([
         'id'      => $newid,

@@ -30,7 +30,7 @@ $context = context_system::instance();
 require_capability('local/ai_reportcreator:manage', $context);
 
 $id     = required_param('id', PARAM_INT);
-$record = $DB->get_record('local_ai_reportcreator_reports', ['id' => $id], '*', MUST_EXIST);
+$record = $DB->get_record('local_ai_reportcreator_rpts', ['id' => $id], '*', MUST_EXIST);
 
 $PAGE->set_context($context);
 $PAGE->set_url(new moodle_url('/local/ai_reportcreator/edit.php', ['id' => $id]));
@@ -59,7 +59,7 @@ if ($form->is_cancelled()) {
 if ($data = $form->get_data()) {
     $record->name         = $data->name;
     $record->timemodified = time();
-    $DB->update_record('local_ai_reportcreator_reports', $record);
+    $DB->update_record('local_ai_reportcreator_rpts', $record);
 
     redirect(
         new moodle_url('/local/ai_reportcreator/view.php', ['id' => $id]),

@@ -34,7 +34,7 @@ require_capability('local/ai_reportcreator:manage', $context);
 
 $id     = required_param('id', PARAM_INT);
 $format = required_param('format', PARAM_ALPHA); // Csv or excel.
-$record = $DB->get_record('local_ai_reportcreator_reports', ['id' => $id], '*', MUST_EXIST);
+$record = $DB->get_record('local_ai_reportcreator_rpts', ['id' => $id], '*', MUST_EXIST);
 
 if (!local_ai_reportcreator_validate_sql_readonly($record->sql_query)) {
     throw new moodle_exception('sqlreadonlyerror', 'local_ai_reportcreator');

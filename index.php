@@ -36,7 +36,7 @@ $PAGE->set_pagelayout('standard');
 
 echo $OUTPUT->header();
 
-$reports = $DB->get_records('local_ai_reportcreator_reports', null, 'timecreated DESC');
+$reports = $DB->get_records('local_ai_reportcreator_rpts', null, 'timecreated DESC');
 
 $templatedata = [
     'createurl'         => (new moodle_url('/local/ai_reportcreator/create.php'))->out(false),

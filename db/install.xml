@@ -4,7 +4,7 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd">
   <TABLES>
-    <TABLE NAME="local_ai_reportcreator_reports" COMMENT="Stores AI-generated reports">
+    <TABLE NAME="local_ai_reportcreator_rpts" COMMENT="Stores AI-generated reports">
       <FIELDS>
         <FIELD NAME="id"               TYPE="int"  LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="userid"           TYPE="int"  LENGTH="10" NOTNULL="true" DEFAULT="0"/>

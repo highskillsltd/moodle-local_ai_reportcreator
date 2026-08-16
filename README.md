@@ -45,7 +45,7 @@ Authorised users find the plugin at:
 
 2. Log in as a site administrator and go to **Site administration → Notifications** to run the database upgrade.
 
-3. The plugin creates one database table: `local_ai_reportcreator_reports`.
+3. The plugin creates one database table: `local_ai_reportcreator_rpts`.
 
 ---
 

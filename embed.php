@@ -30,7 +30,7 @@ require_once(__DIR__ . '/lib.php');
 require_login();
 
 $id     = required_param('id', PARAM_INT);
-$record = $DB->get_record('local_ai_reportcreator_reports', ['id' => $id], '*', MUST_EXIST);
+$record = $DB->get_record('local_ai_reportcreator_rpts', ['id' => $id], '*', MUST_EXIST);
 
 // Safety: only execute read-only SQL.
 if (!local_ai_reportcreator_validate_sql_readonly($record->sql_query)) {

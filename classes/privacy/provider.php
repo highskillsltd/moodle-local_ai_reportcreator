@@ -44,21 +44,21 @@ class provider implements
      */
     public static function get_metadata(collection $collection): collection {
         $collection->add_database_table(
-            'local_ai_reportcreator_reports',
+            'local_ai_reportcreator_rpts',
             [
-                'userid'            => 'privacy:metadata:local_ai_reportcreator_reports:userid',
-                'name'              => 'privacy:metadata:local_ai_reportcreator_reports:name',
-                'nl_request'        => 'privacy:metadata:local_ai_reportcreator_reports:nl_request',
-                'template_type'     => 'privacy:metadata:local_ai_reportcreator_reports:template_type',
-                'sql_query'         => 'privacy:metadata:local_ai_reportcreator_reports:sql_query',
-                'template_html'     => 'privacy:metadata:local_ai_reportcreator_reports:template_html',
-                'tokens_prompt'     => 'privacy:metadata:local_ai_reportcreator_reports:tokens_prompt',
-                'tokens_completion' => 'privacy:metadata:local_ai_reportcreator_reports:tokens_completion',
-                'tokens_total'      => 'privacy:metadata:local_ai_reportcreator_reports:tokens_total',
-                'timecreated'       => 'privacy:metadata:local_ai_reportcreator_reports:timecreated',
-                'timemodified'      => 'privacy:metadata:local_ai_reportcreator_reports:timemodified',
+                'userid'            => 'privacy:metadata:local_ai_reportcreator_rpts:userid',
+                'name'              => 'privacy:metadata:local_ai_reportcreator_rpts:name',
+                'nl_request'        => 'privacy:metadata:local_ai_reportcreator_rpts:nl_request',
+                'template_type'     => 'privacy:metadata:local_ai_reportcreator_rpts:template_type',
+                'sql_query'         => 'privacy:metadata:local_ai_reportcreator_rpts:sql_query',
+                'template_html'     => 'privacy:metadata:local_ai_reportcreator_rpts:template_html',
+                'tokens_prompt'     => 'privacy:metadata:local_ai_reportcreator_rpts:tokens_prompt',
+                'tokens_completion' => 'privacy:metadata:local_ai_reportcreator_rpts:tokens_completion',
+                'tokens_total'      => 'privacy:metadata:local_ai_reportcreator_rpts:tokens_total',
+                'timecreated'       => 'privacy:metadata:local_ai_reportcreator_rpts:timecreated',
+                'timemodified'      => 'privacy:metadata:local_ai_reportcreator_rpts:timemodified',
             ],
-            'privacy:metadata:local_ai_reportcreator_reports'
+            'privacy:metadata:local_ai_reportcreator_rpts'
         );
 
         $collection->add_external_location_link(
@@ -103,7 +103,7 @@ class provider implements
                 continue;
             }
 
-            $reports = $DB->get_records('local_ai_reportcreator_reports', ['userid' => $user->id]);
+            $reports = $DB->get_records('local_ai_reportcreator_rpts', ['userid' => $user->id]);
             if (empty($reports)) {
                 continue;
             }
@@ -143,7 +143,7 @@ class provider implements
             return;
         }
 
-        $DB->delete_records('local_ai_reportcreator_reports', ['userid' => $context->instanceid]);
+        $DB->delete_records('local_ai_reportcreator_rpts', ['userid' => $context->instanceid]);
     }
 
     /**
@@ -162,7 +162,7 @@ class provider implements
                 continue;
             }
 
-            $DB->delete_records('local_ai_reportcreator_reports', ['userid' => $user->id]);
+            $DB->delete_records('local_ai_reportcreator_rpts', ['userid' => $user->id]);
         }
     }
 }

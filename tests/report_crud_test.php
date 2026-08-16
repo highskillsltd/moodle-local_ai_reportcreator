@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * DB integration tests for the local_ai_reportcreator_reports table.
+ * DB integration tests for the local_ai_reportcreator_rpts table.
  *
  * @package    local_ai_reportcreator
  * @copyright  2026 Highskills and more <info@highskills.co.il>
@@ -33,7 +33,7 @@ namespace local_ai_reportcreator;
  */
 class report_crud_test extends advanced_testcase {
     /** @var string Table name used across tests. */
-    public const TABLE = 'local_ai_reportcreator_reports';
+    public const TABLE = 'local_ai_reportcreator_rpts';
 
     /**
      * Build a minimal valid report record object.
