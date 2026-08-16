@@ -49,6 +49,7 @@ class setting_testconnection extends \admin_setting {
      * Returns a truthy value so Moodle renders the element.
      *
      * @return bool
+     * @SuppressWarnings(PHPMD.BooleanGetMethodName) Name is fixed by the admin_setting parent contract.
      */
     public function get_setting() {
         return true;
@@ -59,6 +60,7 @@ class setting_testconnection extends \admin_setting {
      *
      * @param mixed $data Form data (unused).
      * @return string Empty string indicating success.
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter) $data required by the admin_setting parent signature.
      */
     public function write_setting($data) {
         return '';
@@ -69,6 +71,7 @@ class setting_testconnection extends \admin_setting {
      *
      * @param string $query Search query (unused).
      * @return bool Always false.
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter) $query required by the admin_setting parent signature.
      */
     public function is_related($query) {
         return false;
@@ -80,6 +83,7 @@ class setting_testconnection extends \admin_setting {
      * @param mixed  $data  Current setting value (unused).
      * @param string $query Admin search query (unused).
      * @return string HTML output.
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter) $data/$query required by the admin_setting parent signature.
      */
     public function output_html($data, $query = '') {
         global $CFG, $OUTPUT, $PAGE;
