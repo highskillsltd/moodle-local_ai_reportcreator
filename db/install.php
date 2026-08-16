@@ -24,6 +24,14 @@
 function xmldb_local_ai_reportcreator_install() {
     global $DB;
 
+    // On a fresh install, Moodle runs this hook (xmldb_local_ai_reportcreator_install())
+    // before it registers this plugin's capabilities from db/access.php into the database
+    // (that normally happens in update_capabilities(), called right after this hook returns).
+    // Force registration now so assign_capability() below can find the capability it needs.
+    // Calling update_capabilities() again afterward (as Moodle always does) is a harmless
+    // no-op once the database already matches db/access.php.
+    update_capabilities('local_ai_reportcreator');
+
     if ($DB->record_exists('role', ['shortname' => 'ai_reportcreator'])) {
         return;
     }
