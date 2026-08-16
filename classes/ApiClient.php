@@ -125,6 +125,9 @@ class ApiClient {
         $isbadstatus = false;
         $errorbody   = '';   // Buffered body when status is non-2xx.
 
+        global $CFG;
+        require_once($CFG->libdir . '/filelib.php');
+
         $curl = new \curl();
         $curl->setHeader([
             'Authorization: Bearer ' . $this->apikey,
