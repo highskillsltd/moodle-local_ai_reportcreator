@@ -40,7 +40,7 @@ if (!local_ai_reportcreator_validate_sql_readonly($record->sql_query)) {
     throw new moodle_exception('sqlreadonlyerror', 'local_ai_reportcreator');
 }
 
-$rows      = $DB->get_records_sql($record->sql_query);
+$rows      = local_ai_reportcreator_run_report_sql($record->sql_query);
 $semantics = json_decode($record->semantics_json, true) ?: [];
 $firstrow  = !empty($rows) ? (array) reset($rows) : [];
 $keys      = array_keys($firstrow);

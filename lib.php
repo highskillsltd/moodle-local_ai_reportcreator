@@ -49,3 +49,28 @@ function local_ai_reportcreator_validate_sql_readonly(string $sql): bool {
 
     return true;
 }
+
+/**
+ * Execute an AI-generated report SQL query and return all rows as a plain array.
+ *
+ * Uses get_recordset_sql() rather than get_records_sql(): the latter builds
+ * its return value as an array keyed by the first selected column and
+ * requires that column to be unique across rows, which AI-generated report
+ * queries cannot guarantee (e.g. a plain per-enrollment list legitimately
+ * repeats userid). get_recordset_sql() has no such requirement.
+ *
+ * @param string $sql Read-only SQL query text.
+ * @return \stdClass[] Result rows as a plain sequential array.
+ */
+function local_ai_reportcreator_run_report_sql(string $sql): array {
+    global $DB;
+
+    $rows = [];
+    $recordset = $DB->get_recordset_sql($sql);
+    foreach ($recordset as $row) {
+        $rows[] = $row;
+    }
+    $recordset->close();
+
+    return $rows;
+}

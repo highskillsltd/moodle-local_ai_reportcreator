@@ -52,7 +52,7 @@ if (!local_ai_reportcreator_validate_sql_readonly($record->sql_query)) {
     $sqlerror = get_string('sqlreadonlyerror', 'local_ai_reportcreator');
 } else {
     try {
-        $rows = $DB->get_records_sql($record->sql_query);
+        $rows = local_ai_reportcreator_run_report_sql($record->sql_query);
     } catch (Exception $e) {
         $sqlerror = get_string('sqlerror', 'local_ai_reportcreator', $e->getMessage());
     }

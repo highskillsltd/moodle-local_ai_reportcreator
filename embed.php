@@ -43,7 +43,7 @@ if (!local_ai_reportcreator_validate_sql_readonly($record->sql_query)) {
 
 $rows = [];
 try {
-    $rows = $DB->get_records_sql($record->sql_query);
+    $rows = local_ai_reportcreator_run_report_sql($record->sql_query);
 } catch (Exception $e) {
     echo '<!DOCTYPE html><html><body><p style="color:red;font-family:sans-serif;">'
         . htmlspecialchars(get_string('sqlerror', 'local_ai_reportcreator', $e->getMessage()), ENT_QUOTES)
