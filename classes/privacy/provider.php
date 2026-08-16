@@ -35,7 +35,6 @@ use core_privacy\local\request\writer;
 class provider implements
     \core_privacy\local\metadata\provider,
     \core_privacy\local\request\plugin\provider {
-
     /**
      * Describe the personal data stored and disclosed by this plugin.
      *

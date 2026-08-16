@@ -61,6 +61,8 @@ class report_crud_test extends advanced_testcase {
 
     /**
      * Inserting a record returns a positive integer id.
+     *
+     * @coversNothing
      */
     public function test_insert_returns_id(): void {
         global $DB;
@@ -74,6 +76,8 @@ class report_crud_test extends advanced_testcase {
 
     /**
      * A record can be read back by id with all fields intact.
+     *
+     * @coversNothing
      */
     public function test_read_back_matches_inserted_data(): void {
         global $DB;
@@ -93,6 +97,8 @@ class report_crud_test extends advanced_testcase {
 
     /**
      * Deleting a record removes it from the database.
+     *
+     * @coversNothing
      */
     public function test_delete_removes_record(): void {
         global $DB;
@@ -106,6 +112,8 @@ class report_crud_test extends advanced_testcase {
 
     /**
      * Multiple records can be retrieved ordered by timecreated descending.
+     *
+     * @coversNothing
      */
     public function test_multiple_records_ordered(): void {
         global $DB;

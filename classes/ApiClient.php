@@ -136,7 +136,10 @@ class ApiClient {
             'CURLOPT_TIMEOUT'        => $this->streamtimeout,
             'CURLOPT_RETURNTRANSFER' => false,
             // Forward body only on 2xx; buffer it on error so we can report it.
-            'CURLOPT_WRITEFUNCTION'  => function ($ch, $data) use (
+            'CURLOPT_WRITEFUNCTION'  => function (
+                $ch,
+                $data
+            ) use (
                 $chunkcallback,
                 &$httpstatus,
                 &$isbadstatus,
