@@ -35,8 +35,8 @@ require_sesskey();
 $context = context_system::instance();
 require_capability('local/ai_reportcreator:manage', $context);
 
-$middlewareurl = required_param('middleware_url', PARAM_RAW);
-$apipassword   = required_param('api_password', PARAM_RAW);
+$middlewareurl = required_param('middleware_url', PARAM_URL);
+$apipassword   = required_param('api_password', PARAM_ALPHANUMEXT);
 
 header('Content-Type: application/json');
 

@@ -36,7 +36,7 @@ if ($hassiteconfig) {
         get_string('middlewareurl', 'local_ai_reportcreator'),
         get_string('middlewareurl_desc', 'local_ai_reportcreator'),
         '',
-        PARAM_RAW
+        PARAM_URL
     ));
 
     $settings->add(new admin_setting_configtext(
@@ -44,7 +44,7 @@ if ($hassiteconfig) {
         get_string('apikey', 'local_ai_reportcreator'),
         get_string('apikey_desc', 'local_ai_reportcreator'),
         '',
-        PARAM_RAW
+        PARAM_ALPHANUMEXT
     ));
 
     $settings->add(new admin_setting_configtext(

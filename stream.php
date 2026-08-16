@@ -43,7 +43,7 @@ if ($action === 'stream') {
     require_sesskey();
 
     $name         = required_param('name', PARAM_TEXT);
-    $nlrequest    = required_param('nl_request', PARAM_RAW);
+    $nlrequest    = required_param('nl_request', PARAM_TEXT);
     $templatetype = required_param('template_type', PARAM_ALPHA);
 
     $moodleversion = get_config('local_ai_reportcreator', 'moodle_version')
