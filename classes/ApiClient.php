@@ -86,10 +86,12 @@ class ApiClient {
     /**
      * Stream the AI report pipeline response for the given request.
      *
-     * Uses CURLOPT_HEADERFUNCTION to inspect the HTTP status code before any
-     * body bytes are forwarded. If the server returns a non-2xx response the
-     * body is buffered (not sent to $chunkcallback) and a moodle_exception is
-     * thrown after curl_exec so stream.php can emit an SSE error event.
+     * Uses Moodle's \curl wrapper (so site proxy and security-helper settings
+     * are respected) with a CURLOPT_WRITEFUNCTION callback to inspect the
+     * HTTP status code before any body bytes are forwarded. If the server
+     * returns a non-2xx response the body is buffered (not sent to
+     * $chunkcallback) and a moodle_exception is thrown so stream.php can
+     * emit an SSE error event.
      *
      * @param  string   $request       The natural-language report request.
      * @param  string   $system        Calling system identifier (e.g. "moodle").
@@ -107,68 +109,78 @@ class ApiClient {
         callable $chunkcallback
     ): void {
         $url = $this->get_middleware_url();
-        $ch  = curl_init($url);
 
-        $authheader = 'Authorization: Bearer ' . $this->apikey;
+        $postfields = json_encode([
+            'request'        => $request,
+            'system'         => $system,
+            'system_version' => $systemversion,
+            'template_type'  => $templatetype,
+        ]);
 
-        // Track HTTP status from response headers so we can distinguish an
-        // error page from a real SSE stream before forwarding body bytes.
+        // Track HTTP status so we can distinguish an error page from a real
+        // SSE stream before forwarding body bytes. Read from the live curl
+        // handle on the first body chunk — cURL always finishes header
+        // parsing before CURLOPT_WRITEFUNCTION is first invoked.
         $httpstatus  = 0;
         $isbadstatus = false;
         $errorbody   = '';   // Buffered body when status is non-2xx.
 
-        curl_setopt_array($ch, [
-            CURLOPT_POST           => true,
-            CURLOPT_POSTFIELDS     => json_encode([
-                'request'        => $request,
-                'system'         => $system,
-                'system_version' => $systemversion,
-                'template_type'  => $templatetype,
-            ]),
-            CURLOPT_HTTPHEADER     => [
-                $authheader,
-                'Content-Type: application/json',
-                'Accept: text/event-stream',
-            ],
-            CURLOPT_TIMEOUT        => $this->streamtimeout,
-            CURLOPT_RETURNTRANSFER => false,
-            CURLOPT_FOLLOWLOCATION => true,
-            // Capture the response status line before any body data arrives.
-            CURLOPT_HEADERFUNCTION => function ($curl, $header) use (&$httpstatus, &$isbadstatus) {
-                if (preg_match('/^HTTP\/[\d.]+\s+(\d+)/', $header, $m)) {
-                    $httpstatus  = (int) $m[1];
+        $curl = new \curl();
+        $curl->setHeader([
+            'Authorization: Bearer ' . $this->apikey,
+            'Content-Type: application/json',
+            'Accept: text/event-stream',
+        ]);
+
+        $options = [
+            'CURLOPT_TIMEOUT'        => $this->streamtimeout,
+            'CURLOPT_RETURNTRANSFER' => false,
+            // Forward body only on 2xx; buffer it on error so we can report it.
+            'CURLOPT_WRITEFUNCTION'  => function ($ch, $data) use (
+                $chunkcallback,
+                &$httpstatus,
+                &$isbadstatus,
+                &$errorbody
+            ) {
+                if ($httpstatus === 0) {
+                    $httpstatus  = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
                     $isbadstatus = ($httpstatus < 200 || $httpstatus >= 300);
                 }
-                return strlen($header);
-            },
 
-            // Forward body only on 2xx; buffer it on error so we can report it.
-            CURLOPT_WRITEFUNCTION  => function ($curl, $data) use ($chunkcallback, &$isbadstatus, &$errorbody) {
                 if ($isbadstatus) {
                     $errorbody .= $data;
                     return strlen($data);
                 }
+
                 $chunkcallback($data);
                 return strlen($data);
             },
-        ]);
+        ];
 
         if ($this->is_insecure_url()) {
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+            $options['CURLOPT_SSL_VERIFYPEER'] = false;
+            $options['CURLOPT_SSL_VERIFYHOST'] = 0;
+        } else {
+            $options['CURLOPT_SSL_VERIFYPEER'] = true;
+            $options['CURLOPT_SSL_VERIFYHOST'] = 2;
         }
 
-        $ok    = curl_exec($ch);
-        $errno = curl_errno($ch);
-        $error = curl_error($ch);
+        $curl->post($url, $postfields, $options);
 
-        if ($ok === false || $errno !== 0) {
+        if ($curl->errno !== 0) {
             throw new \moodle_exception(
                 'curlerror',
                 'local_ai_reportcreator',
                 '',
-                "cURL error {$errno}: {$error}"
+                "cURL error {$curl->errno}: {$curl->error}"
             );
+        }
+
+        // No body bytes ever arrived (e.g. an empty-body error response) —
+        // fall back to the status captured by the wrapper itself.
+        if ($httpstatus === 0) {
+            $httpstatus  = (int) ($curl->get_info()['http_code'] ?? 0);
+            $isbadstatus = ($httpstatus < 200 || $httpstatus >= 300);
         }
 
         if ($isbadstatus) {
