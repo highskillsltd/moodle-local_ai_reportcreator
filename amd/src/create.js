@@ -16,7 +16,7 @@
  * @copyright  2026 Highskills and more <info@highskills.co.il>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-define(['core/str'], function (Str) {
+define(['core/str', 'core/templates'], function (Str, Templates) {
 
     'use strict';
 
@@ -40,6 +40,30 @@ define(['core/str'], function (Str) {
     }
 
     /**
+     * Render a status_badge template into the given element.
+     *
+     * Async by nature (a template fetch/render Promise) rather than a
+     * synchronous innerHTML assignment — acceptable here since the badge
+     * update landing a tick later than the event that triggered it is not
+     * visible in practice, and agent_start/agent_done events are always
+     * seconds apart in real usage.
+     *
+     * @param {Element} el      The .status-badge element to replace the contents of.
+     * @param {Object}  context Template context for local_ai_reportcreator/status_badge.
+     */
+    function renderBadge(el, context)
+    {
+        if (!el) {
+            return;
+        }
+        Templates.renderForPromise('local_ai_reportcreator/status_badge', context).then(function (result) {
+            return Templates.replaceNodeContents(el, result.html, result.js);
+        }).catch(function () {
+            // Swallow render failures — the badge simply stays in its previous state.
+        });
+    }
+
+    /**
      * Set a progress table row to the running state (spinner badge).
      *
      * @param {string} rowId The DOM id of the table row element.
@@ -50,8 +74,7 @@ define(['core/str'], function (Str) {
         if (!row) {
             return;
         }
-        row.querySelector('.status-badge').innerHTML =
-            '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>' + strings.running;
+        renderBadge(row.querySelector('.status-badge'), {isrunning: true, label: strings.running});
         row.querySelector('.detail-cell').textContent = '';
     }
 
@@ -67,7 +90,7 @@ define(['core/str'], function (Str) {
         if (!row) {
             return;
         }
-        row.querySelector('.status-badge').innerHTML = '<span class="badge bg-success">' + strings.done + '</span>';
+        renderBadge(row.querySelector('.status-badge'), {isdone: true, label: strings.done});
         row.querySelector('.detail-cell').textContent = detail || '';
     }
 
@@ -167,8 +190,7 @@ define(['core/str'], function (Str) {
         ['row-sql', 'row-template'].forEach(function (id) {
             var row = document.getElementById(id);
             if (row) {
-                row.querySelector('.status-badge').innerHTML =
-                    '<span class="spinner-grow spinner-grow-sm text-secondary" role="status"></span>';
+                renderBadge(row.querySelector('.status-badge'), {ispending: true});
                 row.querySelector('.detail-cell').textContent = '';
             }
         });
