@@ -121,3 +121,22 @@ $string['tokentotal']            = 'סה"כ טוקנים';
 $string['generationtime']        = 'זמן עיבוד';
 $string['agent_sql']             = 'סוכן SQL';
 $string['agent_template']        = 'סוכן תבנית';
+
+// Privacy API.
+$string['privacy:metadata:local_ai_reportcreator_reports'] = 'מידע על הדוחות שנוצרו באמצעות AI על ידי כל משתמש.';
+$string['privacy:metadata:local_ai_reportcreator_reports:userid'] = 'מזהה המשתמש שיצר את הדוח.';
+$string['privacy:metadata:local_ai_reportcreator_reports:name'] = 'השם שניתן לדוח.';
+$string['privacy:metadata:local_ai_reportcreator_reports:nl_request'] = 'הבקשה בשפה חופשית שהוקלדה על ידי המשתמש לתיאור הדוח.';
+$string['privacy:metadata:local_ai_reportcreator_reports:template_type'] = 'סוג הפלט שנבחר לדוח (טבלה, לוח בקרה, תרשים וכדומה).';
+$string['privacy:metadata:local_ai_reportcreator_reports:sql_query'] = 'שאילתת ה-SQL שנוצרה מבקשת המשתמש.';
+$string['privacy:metadata:local_ai_reportcreator_reports:template_html'] = 'תבנית ה-HTML שנוצרה עבור הדוח.';
+$string['privacy:metadata:local_ai_reportcreator_reports:tokens_prompt'] = 'מספר טוקני ה-AI של הבקשה ששימשו ליצירת הדוח.';
+$string['privacy:metadata:local_ai_reportcreator_reports:tokens_completion'] = 'מספר טוקני ה-AI של התשובה ששימשו ליצירת הדוח.';
+$string['privacy:metadata:local_ai_reportcreator_reports:tokens_total'] = 'סך כל טוקני ה-AI ששימשו ליצירת הדוח.';
+$string['privacy:metadata:local_ai_reportcreator_reports:timecreated'] = 'מועד יצירת הדוח.';
+$string['privacy:metadata:local_ai_reportcreator_reports:timemodified'] = 'מועד השינוי האחרון של הדוח.';
+$string['privacy:metadata:ai_middleware'] = 'כדי ליצור דוח, הבקשה בשפה חופשית של המשתמש נשלחת לשירות AI middleware חיצוני שהוגדר על ידי מנהל האתר.';
+$string['privacy:metadata:ai_middleware:request'] = 'הבקשה בשפה חופשית שהוקלדה על ידי המשתמש.';
+$string['privacy:metadata:ai_middleware:system'] = 'מזהה המערכת הקוראת (Moodle).';
+$string['privacy:metadata:ai_middleware:system_version'] = 'גרסת Moodle שממנה נשלחת הבקשה.';
+$string['privacy:metadata:ai_middleware:template_type'] = 'סוג הפלט המבוקש עבור הדוח.';

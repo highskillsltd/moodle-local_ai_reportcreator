@@ -121,3 +121,22 @@ $string['tokentotal']            = 'Total tokens';
 $string['generationtime']        = 'Time taken';
 $string['agent_sql']             = 'SQL Agent';
 $string['agent_template']        = 'Template Agent';
+
+// Privacy API.
+$string['privacy:metadata:local_ai_reportcreator_reports'] = 'Information about the AI-generated reports created by each user.';
+$string['privacy:metadata:local_ai_reportcreator_reports:userid'] = 'The ID of the user who created the report.';
+$string['privacy:metadata:local_ai_reportcreator_reports:name'] = 'The name given to the report.';
+$string['privacy:metadata:local_ai_reportcreator_reports:nl_request'] = 'The natural-language request typed by the user to describe the report.';
+$string['privacy:metadata:local_ai_reportcreator_reports:template_type'] = 'The output type chosen for the report (table, dashboard, chart, etc.).';
+$string['privacy:metadata:local_ai_reportcreator_reports:sql_query'] = 'The SQL query generated from the user\'s request.';
+$string['privacy:metadata:local_ai_reportcreator_reports:template_html'] = 'The HTML template generated for the report.';
+$string['privacy:metadata:local_ai_reportcreator_reports:tokens_prompt'] = 'The number of AI prompt tokens used to generate the report.';
+$string['privacy:metadata:local_ai_reportcreator_reports:tokens_completion'] = 'The number of AI completion tokens used to generate the report.';
+$string['privacy:metadata:local_ai_reportcreator_reports:tokens_total'] = 'The total number of AI tokens used to generate the report.';
+$string['privacy:metadata:local_ai_reportcreator_reports:timecreated'] = 'The time the report was created.';
+$string['privacy:metadata:local_ai_reportcreator_reports:timemodified'] = 'The time the report was last modified.';
+$string['privacy:metadata:ai_middleware'] = 'To generate a report, the user\'s natural-language request is sent to an external AI middleware service configured by the site administrator.';
+$string['privacy:metadata:ai_middleware:request'] = 'The natural-language request typed by the user.';
+$string['privacy:metadata:ai_middleware:system'] = 'The calling system identifier (Moodle).';
+$string['privacy:metadata:ai_middleware:system_version'] = 'The Moodle version making the request.';
+$string['privacy:metadata:ai_middleware:template_type'] = 'The output type requested for the report.';
