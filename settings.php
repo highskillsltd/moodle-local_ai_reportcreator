@@ -64,6 +64,9 @@ if ($hassiteconfig) {
     ));
 
     // Navigation link: Site administration → Reports → AI Reports → AI Report Creator.
+    if (!$ADMIN->locate('aireports')) {
+        $ADMIN->add('reports', new admin_category('aireports', get_string('aireports', 'local_ai_reportcreator')));
+    }
     $ADMIN->add('aireports', new admin_externalpage(
         'local_ai_reportcreator_index',
         get_string('pluginname', 'local_ai_reportcreator'),
