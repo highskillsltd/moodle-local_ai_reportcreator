@@ -51,7 +51,8 @@ echo $OUTPUT->header();
 
 // Natural language request note.
 echo '<div class="alert alert-info">';
-echo '<strong>Request:</strong> ' . htmlspecialchars($record->nl_request, ENT_QUOTES);
+echo '<strong>' . get_string('request', 'local_ai_reportcreator') . ':</strong> '
+    . htmlspecialchars($record->nl_request, ENT_QUOTES);
 echo '</div>';
 
 // SQL block.

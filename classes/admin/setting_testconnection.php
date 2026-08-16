@@ -89,6 +89,9 @@ class setting_testconnection extends \admin_setting {
         $btnlabel    = get_string('testconnection', 'local_ai_reportcreator');
         $msgok       = addslashes(get_string('testconnection_success', 'local_ai_reportcreator'));
         $msgfail     = addslashes(get_string('testconnection_fail', 'local_ai_reportcreator'));
+        $msgtesting  = addslashes(get_string('testingconnection', 'local_ai_reportcreator'));
+        $httplabel   = addslashes(get_string('httpstatuslabel', 'local_ai_reportcreator'));
+        $msgerror    = addslashes(get_string('errorheading', 'local_ai_reportcreator'));
 
         $html  = '<div class="form-item row">';
         $html .= '<div class="form-label col-sm-4 col-form-label d-flex pb-0 pr-md-0">';
@@ -115,7 +118,7 @@ class setting_testconnection extends \admin_setting {
 
         btn.disabled = true;
         result.className = 'align-middle ms-2 text-muted';
-        result.textContent = 'Testing…';
+        result.textContent = '{$msgtesting}';
 
         var body = new URLSearchParams();
         body.append('sesskey', '{$sesskey}');
@@ -134,13 +137,13 @@ class setting_testconnection extends \admin_setting {
                 result.textContent = '{$msgok}';
                 result.className = 'align-middle ms-2 text-success fw-bold';
             } else {
-                result.textContent = '{$msgfail}: ' + (data.error || 'HTTP ' + data.http_code);
+                result.textContent = '{$msgfail}: ' + (data.error || '{$httplabel} ' + data.http_code);
                 result.className = 'align-middle ms-2 text-danger';
             }
         })
         .catch(function (e) {
             btn.disabled = false;
-            result.textContent = 'Error: ' + e.message;
+            result.textContent = '{$msgerror}: ' + e.message;
             result.className = 'align-middle ms-2 text-danger';
         });
     });

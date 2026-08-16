@@ -140,3 +140,16 @@ $string['privacy:metadata:ai_middleware:request'] = 'הבקשה בשפה חופ�
 $string['privacy:metadata:ai_middleware:system'] = 'מזהה המערכת הקוראת (Moodle).';
 $string['privacy:metadata:ai_middleware:system_version'] = 'גרסת Moodle שממנה נשלחת הבקשה.';
 $string['privacy:metadata:ai_middleware:template_type'] = 'סוג הפלט המבוקש עבור הדוח.';
+
+// Dynamic / JS UI strings.
+$string['copied']                = 'הועתק!';
+$string['request']               = 'בקשה';
+$string['nopendingreportdata']   = 'לא נמצאו נתוני דוח ממתינים — אנא צור מחדש.';
+$string['middlewareurlempty']    = 'כתובת ה-URL של ה-middleware ריקה.';
+$string['httpstatus']            = 'HTTP {$a}';
+$string['httpstatuslabel']       = 'HTTP';
+$string['testingconnection']     = 'בודק…';
+$string['running']               = 'פועל…';
+$string['done']                  = 'הושלם';
+$string['unknownerror']          = 'שגיאה לא ידועה';
+$string['savefailed']            = 'שמירת הדוח נכשלה.';

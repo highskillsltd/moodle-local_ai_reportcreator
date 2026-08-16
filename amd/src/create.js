@@ -16,12 +16,15 @@
  * @copyright  2026 Highskills and more <info@highskills.co.il>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-define([], function () {
+define(['core/str'], function (Str) {
 
     'use strict';
 
     /** @type {Object} Config injected by create.php via js_call_amd. */
     var cfg = {};
+
+    /** @type {Object} Language strings, resolved before the form is wired up. */
+    var strings = {};
 
     // ── Helpers ────────────────────────────────────────────────────────────
 
@@ -48,7 +51,7 @@ define([], function () {
             return;
         }
         row.querySelector('.status-badge').innerHTML =
-            '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>Running…';
+            '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>' + strings.running;
         row.querySelector('.detail-cell').textContent = '';
     }
 
@@ -64,7 +67,7 @@ define([], function () {
         if (!row) {
             return;
         }
-        row.querySelector('.status-badge').innerHTML = '<span class="badge bg-success">Done</span>';
+        row.querySelector('.status-badge').innerHTML = '<span class="badge bg-success">' + strings.done + '</span>';
         row.querySelector('.detail-cell').textContent = detail || '';
     }
 
@@ -75,7 +78,7 @@ define([], function () {
      */
     function showError(message)
     {
-        document.getElementById('error-message').textContent = message || 'Unknown error';
+        document.getElementById('error-message').textContent = message || strings.unknownerror;
         document.getElementById('error-panel').classList.remove('d-none');
         var btn = document.getElementById('id_submitbutton');
         if (btn) {
@@ -106,7 +109,7 @@ define([], function () {
             if (data && data.viewurl) {
                 window.location.href = data.viewurl;
             } else {
-                showError((data && data.error) || 'Failed to save the report.');
+                showError((data && data.error) || strings.savefailed);
             }
         }).catch(function (e) {
             showError(String(e));
@@ -191,7 +194,7 @@ define([], function () {
             body: formData,
         }).then(function (response) {
             if (!response.ok) {
-                throw new Error('HTTP ' + response.status);
+                throw new Error(strings.httpstatuslabel + ' ' + response.status);
             }
 
             var reader  = response.body.getReader();
@@ -264,25 +267,54 @@ define([], function () {
                 return;
             }
 
-            form.addEventListener('submit', function (e) {
-                if (e.submitter && e.submitter.name === 'cancel') {
-                    return;
-                }
-                e.preventDefault();
+            var wireForm = function () {
+                form.addEventListener('submit', function (e) {
+                    if (e.submitter && e.submitter.name === 'cancel') {
+                        return;
+                    }
+                    e.preventDefault();
 
-                var nameField    = document.getElementById('id_name');
-                var requestField = document.getElementById('id_nl_request');
-                var typeField    = document.getElementById('id_template_type');
+                    var nameField    = document.getElementById('id_name');
+                    var requestField = document.getElementById('id_nl_request');
+                    var typeField    = document.getElementById('id_template_type');
 
-                var name         = nameField ? nameField.value.trim() : '';
-                var nlRequest    = requestField ? requestField.value.trim() : '';
-                var templateType = typeField ? typeField.value : 'report';
+                    var name         = nameField ? nameField.value.trim() : '';
+                    var nlRequest    = requestField ? requestField.value.trim() : '';
+                    var templateType = typeField ? typeField.value : 'report';
 
-                if (!name || !nlRequest) {
-                    return;
-                }
+                    if (!name || !nlRequest) {
+                        return;
+                    }
 
-                startGeneration(name, nlRequest, templateType);
+                    startGeneration(name, nlRequest, templateType);
+                });
+            };
+
+            Str.get_strings([
+                {key: 'running', component: 'local_ai_reportcreator'},
+                {key: 'done', component: 'local_ai_reportcreator'},
+                {key: 'unknownerror', component: 'local_ai_reportcreator'},
+                {key: 'savefailed', component: 'local_ai_reportcreator'},
+                {key: 'httpstatuslabel', component: 'local_ai_reportcreator'},
+            ]).then(function (s) {
+                strings.running         = s[0];
+                strings.done            = s[1];
+                strings.unknownerror    = s[2];
+                strings.savefailed      = s[3];
+                strings.httpstatuslabel = s[4];
+
+                wireForm();
+
+                return null;
+            }).catch(function () {
+                // If string loading fails, fall back to English literals so the form still works.
+                strings.running         = 'Running…';
+                strings.done            = 'Done';
+                strings.unknownerror    = 'Unknown error';
+                strings.savefailed      = 'Failed to save the report.';
+                strings.httpstatuslabel = 'HTTP';
+
+                wireForm();
             });
         },
 

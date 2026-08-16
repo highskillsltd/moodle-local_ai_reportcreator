@@ -135,6 +135,9 @@ echo '<button type="button" class="btn btn-sm btn-secondary mt-2" id="embed-copy
 echo '</div></details>';
 echo '</div></div>';
 
+$msgcopied = addslashes(get_string('copied', 'local_ai_reportcreator'));
+$msgcopy   = addslashes(get_string('copycode', 'local_ai_reportcreator'));
+
 echo <<<JS
 <script>
 (function () {
@@ -144,9 +147,9 @@ echo <<<JS
         var ta = document.getElementById('embed-textarea');
         if (navigator.clipboard && ta) {
             navigator.clipboard.writeText(ta.value).then(function () {
-                btn.textContent = 'Copied!';
+                btn.textContent = '{$msgcopied}';
                 setTimeout(function () {
-                    btn.textContent = btn.dataset.orig || 'Copy';
+                    btn.textContent = btn.dataset.orig || '{$msgcopy}';
                 }, 2000);
             });
         }

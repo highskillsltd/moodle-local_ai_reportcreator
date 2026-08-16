@@ -140,3 +140,16 @@ $string['privacy:metadata:ai_middleware:request'] = 'The natural-language reques
 $string['privacy:metadata:ai_middleware:system'] = 'The calling system identifier (Moodle).';
 $string['privacy:metadata:ai_middleware:system_version'] = 'The Moodle version making the request.';
 $string['privacy:metadata:ai_middleware:template_type'] = 'The output type requested for the report.';
+
+// Dynamic / JS UI strings.
+$string['copied']                = 'Copied!';
+$string['request']               = 'Request';
+$string['nopendingreportdata']   = 'No pending report data found — please generate again.';
+$string['middlewareurlempty']    = 'Middleware URL is empty.';
+$string['httpstatus']            = 'HTTP {$a}';
+$string['httpstatuslabel']       = 'HTTP';
+$string['testingconnection']     = 'Testing…';
+$string['running']               = 'Running…';
+$string['done']                  = 'Done';
+$string['unknownerror']          = 'Unknown error';
+$string['savefailed']            = 'Failed to save the report.';

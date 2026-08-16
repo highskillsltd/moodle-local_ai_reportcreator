@@ -47,6 +47,11 @@ if ($form->is_cancelled()) {
     redirect(new moodle_url('/local/ai_reportcreator/index.php'));
 }
 
+$PAGE->requires->strings_for_js(
+    ['running', 'done', 'unknownerror', 'savefailed', 'httpstatuslabel'],
+    'local_ai_reportcreator'
+);
+
 $PAGE->requires->js_call_amd('local_ai_reportcreator/create', 'init', [
     [
         'sesskey'   => sesskey(),

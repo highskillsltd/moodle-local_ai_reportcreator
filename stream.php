@@ -149,7 +149,7 @@ if ($action === 'save') {
 
     if (!file_exists($metapath)) {
         http_response_code(400);
-        echo json_encode(['error' => 'No pending report data found — please generate again.']);
+        echo json_encode(['error' => get_string('nopendingreportdata', 'local_ai_reportcreator')]);
         exit;
     }
 
@@ -158,7 +158,7 @@ if ($action === 'save') {
 
     if (!$info || empty($info['sql_query'])) {
         http_response_code(400);
-        echo json_encode(['error' => 'No pending report data found — please generate again.']);
+        echo json_encode(['error' => get_string('nopendingreportdata', 'local_ai_reportcreator')]);
         exit;
     }
 

@@ -41,7 +41,11 @@ $apipassword   = required_param('api_password', PARAM_ALPHANUMEXT);
 header('Content-Type: application/json');
 
 if (empty(trim($middlewareurl))) {
-    echo json_encode(['ok' => false, 'error' => 'Middleware URL is empty.', 'http_code' => 0]);
+    echo json_encode([
+        'ok'        => false,
+        'error'     => get_string('middlewareurlempty', 'local_ai_reportcreator'),
+        'http_code' => 0,
+    ]);
     exit;
 }
 
@@ -70,7 +74,7 @@ if ($httpcode === 200) {
     $response = json_decode($responseraw, true);
     $error    = $response['error'] ?? $response['detail'] ?? substr($responseraw, 0, 300);
     if (empty($error)) {
-        $error = 'HTTP ' . $httpcode;
+        $error = get_string('httpstatus', 'local_ai_reportcreator', $httpcode);
     }
     echo json_encode(['ok' => false, 'error' => $error, 'http_code' => $httpcode]);
 }
