@@ -16,7 +16,7 @@
  * @copyright  2026 Highskills and more <info@highskills.co.il>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-define(['core/str', 'core/templates'], function (Str, Templates) {
+define(['core/str', 'core/templates'], function(Str, Templates) {
 
     'use strict';
 
@@ -34,8 +34,7 @@ define(['core/str', 'core/templates'], function (Str, Templates) {
      * @param {number} ms Elapsed time in milliseconds.
      * @returns {string} Formatted string (e.g. "3.5s").
      */
-    function formatElapsed(ms)
-    {
+    function formatElapsed(ms) {
         return (ms / 1000).toFixed(1) + 's';
     }
 
@@ -51,14 +50,13 @@ define(['core/str', 'core/templates'], function (Str, Templates) {
      * @param {Element} el      The .status-badge element to replace the contents of.
      * @param {Object}  context Template context for local_ai_reportcreator/status_badge.
      */
-    function renderBadge(el, context)
-    {
+    function renderBadge(el, context) {
         if (!el) {
             return;
         }
-        Templates.renderForPromise('local_ai_reportcreator/status_badge', context).then(function (result) {
+        Templates.renderForPromise('local_ai_reportcreator/status_badge', context).then(function(result) {
             return Templates.replaceNodeContents(el, result.html, result.js);
-        }).catch(function () {
+        }).catch(function() {
             // Swallow render failures — the badge simply stays in its previous state.
         });
     }
@@ -68,8 +66,7 @@ define(['core/str', 'core/templates'], function (Str, Templates) {
      *
      * @param {string} rowId The DOM id of the table row element.
      */
-    function rowSetRunning(rowId)
-    {
+    function rowSetRunning(rowId) {
         var row = document.getElementById(rowId);
         if (!row) {
             return;
@@ -84,8 +81,7 @@ define(['core/str', 'core/templates'], function (Str, Templates) {
      * @param {string} rowId  The DOM id of the table row element.
      * @param {string} detail Optional detail text to display.
      */
-    function rowSetDone(rowId, detail)
-    {
+    function rowSetDone(rowId, detail) {
         var row = document.getElementById(rowId);
         if (!row) {
             return;
@@ -99,8 +95,7 @@ define(['core/str', 'core/templates'], function (Str, Templates) {
      *
      * @param {string} message Error text to display.
      */
-    function showError(message)
-    {
+    function showError(message) {
         document.getElementById('error-message').textContent = message || strings.unknownerror;
         document.getElementById('error-panel').classList.remove('d-none');
         var btn = document.getElementById('id_submitbutton');
@@ -115,8 +110,7 @@ define(['core/str', 'core/templates'], function (Str, Templates) {
      * @param {number} tokensTotal  Summed tokens across both agent stages.
      * @param {number} generationMs Wall-clock generation time in milliseconds.
      */
-    function saveReport(tokensTotal, generationMs)
-    {
+    function saveReport(tokensTotal, generationMs) {
         var body = new URLSearchParams();
         body.append('sesskey', cfg.sesskey);
         body.append('tokens_total', tokensTotal);
@@ -126,15 +120,16 @@ define(['core/str', 'core/templates'], function (Str, Templates) {
             method: 'POST',
             headers: {'Content-Type': 'application/x-www-form-urlencoded'},
             body: body.toString(),
-        }).then(function (r) {
+        }).then(function(r) {
             return r.json();
-        }).then(function (data) {
+        }).then(function(data) {
             if (data && data.viewurl) {
                 window.location.href = data.viewurl;
             } else {
                 showError((data && data.error) || strings.savefailed);
             }
-        }).catch(function (e) {
+            return null;
+        }).catch(function(e) {
             showError(String(e));
         });
     }
@@ -145,8 +140,7 @@ define(['core/str', 'core/templates'], function (Str, Templates) {
      * @param {Object} msg   Parsed JSON event from the SSE stream.
      * @param {Object} state Mutable state shared across events for this run.
      */
-    function handleEvent(msg, state)
-    {
+    function handleEvent(msg, state) {
         var rowId = msg.stage === 'template' ? 'row-template' : 'row-sql';
 
         switch (msg.event) {
@@ -177,17 +171,61 @@ define(['core/str', 'core/templates'], function (Str, Templates) {
     // ── SSE stream consumer ────────────────────────────────────────────────
 
     /**
+     * Read one chunk from the stream and schedule the next read.
+     *
+     * Declared at module scope (rather than nested inside the fetch().then()
+     * callback that calls it) so its own reader.read().then() call isn't
+     * lexically nested inside another then() callback.
+     *
+     * @param {ReadableStreamDefaultReader} reader  The response body reader.
+     * @param {TextDecoder}                 decoder Shared UTF-8 decoder.
+     * @param {string}                      buffer  Undecoded tail from the previous chunk.
+     * @param {Object}                      state   Mutable state shared across events for this run.
+     * @returns {Promise} Resolves when the stream is exhausted.
+     */
+    function pumpStream(reader, decoder, buffer, state) {
+        return reader.read().then(function(result) {
+            if (result.done) {
+                return null;
+            }
+
+            buffer += decoder.decode(result.value, {stream: true});
+
+            var blocks = buffer.split('\n\n');
+            buffer = blocks.pop();
+
+            blocks.forEach(function(block) {
+                var dataLine = null;
+                block.split('\n').forEach(function(line) {
+                    if (line.indexOf('data: ') === 0 && dataLine === null) {
+                        dataLine = line.slice(6);
+                    }
+                });
+                if (dataLine === null) {
+                    return;
+                }
+                try {
+                    handleEvent(JSON.parse(dataLine), state);
+                } catch (e) {
+                    // Ignore malformed JSON lines.
+                }
+            });
+
+            return pumpStream(reader, decoder, buffer, state);
+        });
+    }
+
+    /**
      * Submit the report request and consume the SSE stream.
      *
      * @param {string} name         Report name.
      * @param {string} nlRequest    Natural-language report request.
      * @param {string} templateType Output template type.
      */
-    function startGeneration(name, nlRequest, templateType)
-    {
+    function startGeneration(name, nlRequest, templateType) {
         document.getElementById('error-panel').classList.add('d-none');
 
-        ['row-sql', 'row-template'].forEach(function (id) {
+        ['row-sql', 'row-template'].forEach(function(id) {
             var row = document.getElementById(id);
             if (row) {
                 renderBadge(row.querySelector('.status-badge'), {ispending: true});
@@ -214,55 +252,16 @@ define(['core/str', 'core/templates'], function (Str, Templates) {
         fetch(cfg.streamUrl, {
             method: 'POST',
             body: formData,
-        }).then(function (response) {
+        }).then(function(response) {
             if (!response.ok) {
                 throw new Error(strings.httpstatuslabel + ' ' + response.status);
             }
 
-            var reader  = response.body.getReader();
+            var reader = response.body.getReader();
             var decoder = new TextDecoder();
-            var buffer  = '';
 
-            /**
-             * Read one chunk from the stream and schedule the next read.
-             *
-             * @returns {Promise} Resolves when the stream is exhausted.
-             */
-            function pump()
-            {
-                return reader.read().then(function (result) {
-                    if (result.done) {
-                        return;
-                    }
-
-                    buffer += decoder.decode(result.value, {stream: true});
-
-                    var blocks = buffer.split('\n\n');
-                    buffer = blocks.pop();
-
-                    blocks.forEach(function (block) {
-                        var dataLine = null;
-                        block.split('\n').forEach(function (line) {
-                            if (line.indexOf('data: ') === 0 && dataLine === null) {
-                                dataLine = line.slice(6);
-                            }
-                        });
-                        if (dataLine === null) {
-                            return;
-                        }
-                        try {
-                            handleEvent(JSON.parse(dataLine), state);
-                        } catch (e) {
-                            // Ignore malformed JSON lines.
-                        }
-                    });
-
-                    return pump();
-                });
-            }
-
-            return pump();
-        }).catch(function (err) {
+            return pumpStream(reader, decoder, '', state);
+        }).catch(function(err) {
             showError(String(err));
         });
     }
@@ -280,7 +279,7 @@ define(['core/str', 'core/templates'], function (Str, Templates) {
          * @param {string} config.streamUrl URL of the SSE streaming endpoint.
          * @param {string} config.saveUrl   URL of the save endpoint.
          */
-        init: function (config) {
+        init: function(config) {
             cfg = config || {};
 
             var formContainer = document.getElementById('form-container');
@@ -289,19 +288,19 @@ define(['core/str', 'core/templates'], function (Str, Templates) {
                 return;
             }
 
-            var wireForm = function () {
-                form.addEventListener('submit', function (e) {
+            var wireForm = function() {
+                form.addEventListener('submit', function(e) {
                     if (e.submitter && e.submitter.name === 'cancel') {
                         return;
                     }
                     e.preventDefault();
 
-                    var nameField    = document.getElementById('id_name');
+                    var nameField = document.getElementById('id_name');
                     var requestField = document.getElementById('id_nl_request');
-                    var typeField    = document.getElementById('id_template_type');
+                    var typeField = document.getElementById('id_template_type');
 
-                    var name         = nameField ? nameField.value.trim() : '';
-                    var nlRequest    = requestField ? requestField.value.trim() : '';
+                    var name = nameField ? nameField.value.trim() : '';
+                    var nlRequest = requestField ? requestField.value.trim() : '';
                     var templateType = typeField ? typeField.value : 'report';
 
                     if (!name || !nlRequest) {
@@ -318,22 +317,22 @@ define(['core/str', 'core/templates'], function (Str, Templates) {
                 {key: 'unknownerror', component: 'local_ai_reportcreator'},
                 {key: 'savefailed', component: 'local_ai_reportcreator'},
                 {key: 'httpstatuslabel', component: 'local_ai_reportcreator'},
-            ]).then(function (s) {
-                strings.running         = s[0];
-                strings.done            = s[1];
-                strings.unknownerror    = s[2];
-                strings.savefailed      = s[3];
+            ]).then(function(s) {
+                strings.running = s[0];
+                strings.done = s[1];
+                strings.unknownerror = s[2];
+                strings.savefailed = s[3];
                 strings.httpstatuslabel = s[4];
 
                 wireForm();
 
                 return null;
-            }).catch(function () {
+            }).catch(function() {
                 // If string loading fails, fall back to English literals so the form still works.
-                strings.running         = 'Running…';
-                strings.done            = 'Done';
-                strings.unknownerror    = 'Unknown error';
-                strings.savefailed      = 'Failed to save the report.';
+                strings.running = 'Running…';
+                strings.done = 'Done';
+                strings.unknownerror = 'Unknown error';
+                strings.savefailed = 'Failed to save the report.';
                 strings.httpstatuslabel = 'HTTP';
 
                 wireForm();

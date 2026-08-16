@@ -14,7 +14,7 @@
  * @copyright  2026 Highskills and more <info@highskills.co.il>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-define(['core/str'], function (Str) {
+define(['core/str'], function(Str) {
 
     'use strict';
 
@@ -23,21 +23,23 @@ define(['core/str'], function (Str) {
      *
      * @param {Object} strings Resolved strings {copied, copycode}.
      */
-    function wireCopyButton(strings)
-    {
+    function wireCopyButton(strings) {
         var btn = document.getElementById('embed-copy-btn');
         if (!btn) {
             return;
         }
 
-        btn.addEventListener('click', function () {
+        btn.addEventListener('click', function() {
             var ta = document.getElementById('embed-textarea');
             if (navigator.clipboard && ta) {
-                navigator.clipboard.writeText(ta.value).then(function () {
+                navigator.clipboard.writeText(ta.value).then(function() {
                     btn.textContent = strings.copied;
-                    setTimeout(function () {
+                    setTimeout(function() {
                         btn.textContent = btn.dataset.orig || strings.copycode;
                     }, 2000);
+                    return null;
+                }).catch(function() {
+                    // Clipboard write failed (e.g. permission denied) — leave the button as-is.
                 });
             }
         });
@@ -51,15 +53,15 @@ define(['core/str'], function (Str) {
          *
          * Called by view.php via js_call_amd.
          */
-        init: function () {
+        init: function() {
             Str.get_strings([
                 {key: 'copied', component: 'local_ai_reportcreator'},
                 {key: 'copycode', component: 'local_ai_reportcreator'},
-            ]).then(function (s) {
+            ]).then(function(s) {
                 wireCopyButton({copied: s[0], copycode: s[1]});
 
                 return null;
-            }).catch(function () {
+            }).catch(function() {
                 // If string loading fails, fall back to English literals so the button still works.
                 wireCopyButton({copied: 'Copied!', copycode: 'Copy'});
             });

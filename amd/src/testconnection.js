@@ -15,7 +15,7 @@
  * @copyright  2026 Highskills and more <info@highskills.co.il>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-define(['core/str'], function (Str) {
+define(['core/str'], function(Str) {
 
     'use strict';
 
@@ -27,14 +27,13 @@ define(['core/str'], function (Str) {
      *
      * @param {Object} strings Resolved strings.
      */
-    function wireButton(strings)
-    {
+    function wireButton(strings) {
         var btn = document.getElementById('local-ai-testconn-btn');
         if (!btn) {
             return;
         }
 
-        btn.addEventListener('click', function () {
+        btn.addEventListener('click', function() {
             var result = document.getElementById('local-ai-testconn-result');
             var urlField = document.querySelector('[name="s_local_ai_reportcreator_middleware_url"]');
             var pwdField = document.querySelector('[name="s_local_ai_reportcreator_api_key"]');
@@ -54,9 +53,9 @@ define(['core/str'], function (Str) {
                 method: 'POST',
                 headers: {'Content-Type': 'application/x-www-form-urlencoded'},
                 body: body.toString(),
-            }).then(function (r) {
+            }).then(function(r) {
                 return r.json();
-            }).then(function (data) {
+            }).then(function(data) {
                 btn.disabled = false;
                 if (data.ok) {
                     result.textContent = strings.testconnectionSuccess;
@@ -66,7 +65,8 @@ define(['core/str'], function (Str) {
                         + (data.error || strings.httpstatuslabel + ' ' + data.http_code);
                     result.className = 'align-middle ms-2 text-danger';
                 }
-            }).catch(function (e) {
+                return null;
+            }).catch(function(e) {
                 btn.disabled = false;
                 result.textContent = strings.errorheading + ': ' + e.message;
                 result.className = 'align-middle ms-2 text-danger';
@@ -84,7 +84,7 @@ define(['core/str'], function (Str) {
          * @param {string} config.testurl  URL of the testconnection.php AJAX endpoint.
          * @param {string} config.sesskey  Moodle session key.
          */
-        init: function (config) {
+        init: function(config) {
             cfg = config || {};
 
             Str.get_strings([
@@ -93,7 +93,7 @@ define(['core/str'], function (Str) {
                 {key: 'testconnection_fail', component: 'local_ai_reportcreator'},
                 {key: 'httpstatuslabel', component: 'local_ai_reportcreator'},
                 {key: 'errorheading', component: 'local_ai_reportcreator'},
-            ]).then(function (s) {
+            ]).then(function(s) {
                 wireButton({
                     testingconnection: s[0],
                     testconnectionSuccess: s[1],
@@ -103,7 +103,7 @@ define(['core/str'], function (Str) {
                 });
 
                 return null;
-            }).catch(function () {
+            }).catch(function() {
                 // If string loading fails, fall back to English literals so the button still works.
                 wireButton({
                     testingconnection: 'Testing…',
