@@ -1,0 +1,55 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_ai_reportcreator/embed_page
+
+    Bare, Moodle-chrome-free HTML document used by embed.php for
+    cross-origin iframe embedding. This page never calls $OUTPUT->header()/
+    footer(), so Moodle's AMD/JS-requires pipeline is never flushed here —
+    the resize/postMessage script below is static (no server-side
+    variables) and is kept as a literal inline <script> for that reason;
+    it cannot be moved to an AMD module on a page with no page chrome.
+
+    Classes required for JS: none.
+    Data attributes required for JS: none.
+
+    Context variables required for this template:
+    * title - report name, HTML-escaped
+    * output - the rendered report body (AI-generated, per-record HTML)
+
+    Example context (json):
+    {
+        "title": "My report",
+        "output": "<table>...</table>"
+    }
+}}<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{title}}</title>
+</head><body style="margin:0;padding:0;">
+{{{output}}}
+<script>
+(function(){
+function laiH(){
+var h=Math.max(document.body.scrollHeight,document.documentElement.scrollHeight);
+window.parent.postMessage({type:"lai-resize",height:h},"*");
+}
+window.addEventListener("load",function(){laiH();setTimeout(laiH,500);setTimeout(laiH,1500);});
+})();
+</script>
+</body></html>

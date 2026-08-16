@@ -99,20 +99,7 @@ header('Content-Type: text/html; charset=UTF-8');
 header('X-Frame-Options: ALLOWALL');
 header('Content-Security-Policy: frame-ancestors *');
 
-echo '<!DOCTYPE html>';
-echo '<html lang="en"><head>';
-echo '<meta charset="UTF-8">';
-echo '<meta name="viewport" content="width=device-width, initial-scale=1">';
-echo '<title>' . htmlspecialchars($record->name, ENT_QUOTES) . '</title>';
-echo '</head><body style="margin:0;padding:0;">';
-echo $output;
-echo '<script>';
-echo '(function(){';
-echo 'function laiH(){';
-echo 'var h=Math.max(document.body.scrollHeight,document.documentElement.scrollHeight);';
-echo 'window.parent.postMessage({type:"lai-resize",height:h},"*");';
-echo '}';
-echo 'window.addEventListener("load",function(){laiH();setTimeout(laiH,500);setTimeout(laiH,1500);});';
-echo '})();';
-echo '</script>';
-echo '</body></html>';
+echo $OUTPUT->render_from_template('local_ai_reportcreator/embed_page', [
+    'title'  => $record->name,
+    'output' => $output,
+]);

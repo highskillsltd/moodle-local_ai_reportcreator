@@ -36,23 +36,22 @@ $PAGE->set_pagelayout('standard');
 
 echo $OUTPUT->header();
 
-// Create button.
-echo '<div class="mb-3">';
-echo html_writer::link(
-    new moodle_url('/local/ai_reportcreator/create.php'),
-    get_string('createreport', 'local_ai_reportcreator'),
-    ['class' => 'btn btn-primary']
-);
-echo '</div>';
-
 $reports = $DB->get_records('local_ai_reportcreator_reports', null, 'timecreated DESC');
+
+$templatedata = [
+    'createurl'         => (new moodle_url('/local/ai_reportcreator/create.php'))->out(false),
+    'createlabel'       => get_string('createreport', 'local_ai_reportcreator'),
+    'hasreports'        => !empty($reports),
+    'emptynotification' => '',
+    'tablehtml'         => '',
+];
 
 if (empty($reports)) {
     $createlink = html_writer::link(
         new moodle_url('/local/ai_reportcreator/create.php'),
         get_string('createreport', 'local_ai_reportcreator')
     );
-    echo $OUTPUT->notification(
+    $templatedata['emptynotification'] = $OUTPUT->notification(
         get_string('noreports', 'local_ai_reportcreator') . ' ' . $createlink,
         'info'
     );
@@ -105,7 +104,9 @@ if (empty($reports)) {
         ];
     }
 
-    echo html_writer::table($table);
+    $templatedata['tablehtml'] = html_writer::table($table);
 }
+
+echo $OUTPUT->render_from_template('local_ai_reportcreator/report_list', $templatedata);
 
 echo $OUTPUT->footer();

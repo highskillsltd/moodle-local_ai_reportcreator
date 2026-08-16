@@ -1,0 +1,84 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_ai_reportcreator/create_panels
+
+    Create-report page body: the request form on the left, and a progress
+    panel + error panel on the right that amd/src/create.js drives live
+    while the report is being generated.
+
+    Classes required for JS: d-none (toggled by amd/src/create.js).
+
+    Data attributes required for JS: none — amd/src/create.js binds to the
+    element ids below directly (#form-container, #progress-panel,
+    #progress-table, #error-panel, #error-message, and one row id per
+    entry in "progressrows"). These ids must not change without updating
+    amd/src/create.js to match.
+
+    Context variables required for this template:
+    * apinotification - pre-rendered $OUTPUT->notification() HTML, or empty string when the API is configured
+    * formhtml - pre-rendered moodleform HTML ($form->render())
+    * generatinglabel - heading text for the progress panel
+    * progressrows - array of {id, label} for each pipeline stage
+    * errorheadinglabel - label prefix for the error panel
+
+    Example context (json):
+    {
+        "apinotification": "",
+        "formhtml": "<form>...</form>",
+        "generatinglabel": "Calling AI middleware...",
+        "progressrows": [
+            {"id": "row-sql", "label": "SQL Agent"},
+            {"id": "row-template", "label": "Template Agent"}
+        ],
+        "errorheadinglabel": "Error"
+    }
+}}
+{{{apinotification}}}
+<div class="row g-3 align-items-start">
+    <div class="col-md-7">
+        <div id="form-container">
+            {{{formhtml}}}
+        </div>
+    </div>
+    <div class="col-md-5">
+        <div id="progress-panel" class="card mb-3 d-none">
+            <div class="card-header fw-semibold">{{generatinglabel}}</div>
+            <div class="card-body p-0">
+                <table class="table table-sm mb-0" id="progress-table">
+                    <tbody>
+                        {{#progressrows}}
+                        <tr id="{{id}}">
+                            <td class="ps-3 py-2 w-50">{{label}}</td>
+                            <td class="py-2">
+                                <span class="status-badge">
+                                    <span class="spinner-grow spinner-grow-sm text-secondary" role="status"></span>
+                                </span>
+                            </td>
+                            <td class="py-2 text-end pe-3 text-muted small detail-cell"></td>
+                        </tr>
+                        {{/progressrows}}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div id="error-panel" class="alert alert-danger d-none" role="alert">
+            <strong>{{errorheadinglabel}}:</strong>
+            <span id="error-message"></span>
+        </div>
+    </div>
+</div>

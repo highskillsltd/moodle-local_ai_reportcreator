@@ -49,17 +49,11 @@ $PAGE->navbar->add(get_string('viewsql', 'local_ai_reportcreator'));
 
 echo $OUTPUT->header();
 
-// Natural language request note.
-echo '<div class="alert alert-info">';
-echo '<strong>' . get_string('request', 'local_ai_reportcreator') . ':</strong> '
-    . htmlspecialchars($record->nl_request, ENT_QUOTES);
-echo '</div>';
-
-// SQL block.
-echo '<pre class="bg-light border rounded p-3" style="white-space:pre-wrap;word-break:break-all;">';
-echo '<code style="font-family:monospace;">';
-echo htmlspecialchars($record->sql_query, ENT_QUOTES);
-echo '</code></pre>';
+echo $OUTPUT->render_from_template('local_ai_reportcreator/sql_view', [
+    'requestlabel' => get_string('request', 'local_ai_reportcreator'),
+    'nlrequest'    => htmlspecialchars($record->nl_request, ENT_QUOTES),
+    'sqlquery'     => htmlspecialchars($record->sql_query, ENT_QUOTES),
+]);
 
 // Back button.
 echo html_writer::link(

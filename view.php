@@ -122,43 +122,16 @@ $resizejs  = '<script>window.addEventListener(\'message\',function(e){'
             . 'var f=document.getElementById(\'' . $iframeid . '\');'
             . 'if(f)f.style.height=e.data.height+\'px\';}});</script>';
 $iframesrc = htmlspecialchars($iframetag . "\n" . $resizejs, ENT_QUOTES);
-echo '<div id="embed-panel" class="card mt-3"><div class="card-body">';
-echo '<details>';
-echo '<summary class="h6 mb-0" style="cursor:pointer;">'
-    . get_string('embedcode', 'local_ai_reportcreator') . '</summary>';
-echo '<div class="mt-3">';
-echo '<p class="text-muted small">' . get_string('embedinstructions', 'local_ai_reportcreator') . '</p>';
-echo '<textarea class="form-control font-monospace" rows="3" id="embed-textarea" readonly>'
-    . $iframesrc . '</textarea>';
-echo '<button type="button" class="btn btn-sm btn-secondary mt-2" id="embed-copy-btn">'
-    . get_string('copycode', 'local_ai_reportcreator') . '</button>';
-echo '</div></details>';
-echo '</div></div>';
 
-$msgcopied = addslashes(get_string('copied', 'local_ai_reportcreator'));
-$msgcopy   = addslashes(get_string('copycode', 'local_ai_reportcreator'));
+echo $OUTPUT->render_from_template('local_ai_reportcreator/embed_panel', [
+    'embedcodelabel'    => get_string('embedcode', 'local_ai_reportcreator'),
+    'embedinstructions' => get_string('embedinstructions', 'local_ai_reportcreator'),
+    'iframesrc'         => $iframesrc,
+    'copylabel'         => get_string('copycode', 'local_ai_reportcreator'),
+]);
 
-echo <<<JS
-<script>
-(function () {
-    var btn = document.getElementById('embed-copy-btn');
-    if (!btn) return;
-    btn.addEventListener('click', function () {
-        var ta = document.getElementById('embed-textarea');
-        if (navigator.clipboard && ta) {
-            navigator.clipboard.writeText(ta.value).then(function () {
-                btn.textContent = '{$msgcopied}';
-                setTimeout(function () {
-                    btn.textContent = btn.dataset.orig || '{$msgcopy}';
-                }, 2000);
-            });
-        }
-    });
-    var btn2 = document.getElementById('embed-copy-btn');
-    if (btn2) btn2.dataset.orig = btn2.textContent;
-})();
-</script>
-JS;
+$PAGE->requires->strings_for_js(['copied', 'copycode'], 'local_ai_reportcreator');
+$PAGE->requires->js_call_amd('local_ai_reportcreator/view', 'init');
 
 // Action buttons.
 echo '<div class="mt-3 mb-4">';

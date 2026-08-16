@@ -63,50 +63,22 @@ $PAGE->requires->js_call_amd('local_ai_reportcreator/create', 'init', [
 echo $OUTPUT->header();
 
 $client = new \local_ai_reportcreator\ApiClient();
+$apinotification = '';
 if (!$client->is_configured()) {
-    echo $OUTPUT->notification(get_string('api_not_configured', 'local_ai_reportcreator'), 'warning');
+    $apinotification = $OUTPUT->notification(get_string('api_not_configured', 'local_ai_reportcreator'), 'warning');
 }
 
-echo '<div class="row g-3 align-items-start">';
-
-echo '<div class="col-md-7">';
-echo '<div id="form-container">';
-$form->display();
-echo '</div>';
-echo '</div>';
-
-echo '<div class="col-md-5">';
-
-// Progress panel (hidden until the form is submitted).
-echo '<div id="progress-panel" class="card mb-3 d-none">';
-echo '<div class="card-header fw-semibold">' . get_string('generating', 'local_ai_reportcreator') . '</div>';
-echo '<div class="card-body p-0">';
-echo '<table class="table table-sm mb-0" id="progress-table"><tbody>';
-
-$progressrows = [
-    ['id' => 'row-sql', 'label' => get_string('agent_sql', 'local_ai_reportcreator')],
-    ['id' => 'row-template', 'label' => get_string('agent_template', 'local_ai_reportcreator')],
+$templatedata = [
+    'apinotification'   => $apinotification,
+    'formhtml'          => $form->render(),
+    'generatinglabel'   => get_string('generating', 'local_ai_reportcreator'),
+    'errorheadinglabel' => get_string('errorheading', 'local_ai_reportcreator'),
+    'progressrows'      => [
+        ['id' => 'row-sql', 'label' => get_string('agent_sql', 'local_ai_reportcreator')],
+        ['id' => 'row-template', 'label' => get_string('agent_template', 'local_ai_reportcreator')],
+    ],
 ];
-foreach ($progressrows as $row) {
-    echo '<tr id="' . $row['id'] . '">';
-    echo '<td class="ps-3 py-2 w-50">' . htmlspecialchars($row['label'], ENT_QUOTES) . '</td>';
-    echo '<td class="py-2"><span class="status-badge">'
-        . '<span class="spinner-grow spinner-grow-sm text-secondary" role="status"></span>'
-        . '</span></td>';
-    echo '<td class="py-2 text-end pe-3 text-muted small detail-cell"></td>';
-    echo '</tr>';
-}
 
-echo '</tbody></table>';
-echo '</div></div>';
-
-// Error banner (hidden until an error event).
-echo '<div id="error-panel" class="alert alert-danger d-none" role="alert">';
-echo '<strong>' . get_string('errorheading', 'local_ai_reportcreator') . ':</strong> ';
-echo '<span id="error-message"></span>';
-echo '</div>';
-
-echo '</div>'; // /.col-md-5
-echo '</div>'; // /.row
+echo $OUTPUT->render_from_template('local_ai_reportcreator/create_panels', $templatedata);
 
 echo $OUTPUT->footer();

@@ -1,0 +1,52 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_ai_reportcreator/embed_panel
+
+    Collapsible "embed this report" panel shown on view.php. The copy
+    button is wired up by amd/src/view.js, which binds to #embed-copy-btn
+    and #embed-textarea by id.
+
+    Classes required for JS: none.
+    Data attributes required for JS: none.
+
+    Context variables required for this template:
+    * embedcodelabel - summary/toggle label
+    * embedinstructions - instructional text shown above the textarea
+    * iframesrc - the embed snippet (iframe tag + resize script), HTML-escaped for display as text
+    * copylabel - initial label for the copy button
+
+    Example context (json):
+    {
+        "embedcodelabel": "Embed this report",
+        "embedinstructions": "Copy the code below...",
+        "iframesrc": "&lt;iframe src=\"...\"&gt;&lt;/iframe&gt;",
+        "copylabel": "Copy"
+    }
+}}
+<div id="embed-panel" class="card mt-3">
+    <div class="card-body">
+        <details>
+            <summary class="h6 mb-0" style="cursor:pointer;">{{embedcodelabel}}</summary>
+            <div class="mt-3">
+                <p class="text-muted small">{{embedinstructions}}</p>
+                <textarea class="form-control font-monospace" rows="3" id="embed-textarea" readonly>{{{iframesrc}}}</textarea>
+                <button type="button" class="btn btn-sm btn-secondary mt-2" id="embed-copy-btn">{{copylabel}}</button>
+            </div>
+        </details>
+    </div>
+</div>

@@ -82,74 +82,25 @@ class setting_testconnection extends \admin_setting {
      * @return string HTML output.
      */
     public function output_html($data, $query = '') {
-        global $CFG;
+        global $CFG, $OUTPUT, $PAGE;
 
-        $testurl     = $CFG->wwwroot . '/local/ai_reportcreator/testconnection.php';
-        $sesskey     = sesskey();
-        $btnlabel    = get_string('testconnection', 'local_ai_reportcreator');
-        $msgok       = addslashes(get_string('testconnection_success', 'local_ai_reportcreator'));
-        $msgfail     = addslashes(get_string('testconnection_fail', 'local_ai_reportcreator'));
-        $msgtesting  = addslashes(get_string('testingconnection', 'local_ai_reportcreator'));
-        $httplabel   = addslashes(get_string('httpstatuslabel', 'local_ai_reportcreator'));
-        $msgerror    = addslashes(get_string('errorheading', 'local_ai_reportcreator'));
+        $testurl  = $CFG->wwwroot . '/local/ai_reportcreator/testconnection.php';
+        $btnlabel = get_string('testconnection', 'local_ai_reportcreator');
 
-        $html  = '<div class="form-item row">';
-        $html .= '<div class="form-label col-sm-4 col-form-label d-flex pb-0 pr-md-0">';
-        $html .= htmlspecialchars($btnlabel, ENT_QUOTES);
-        $html .= '</div>';
-        $html .= '<div class="form-setting col-sm-8">';
-        $html .= '<button type="button" class="btn btn-secondary" id="local-ai-testconn-btn">';
-        $html .= htmlspecialchars($btnlabel, ENT_QUOTES);
-        $html .= '</button>';
-        $html .= ' <span id="local-ai-testconn-result" class="align-middle ms-2"></span>';
-        $html .= '</div></div>';
+        $html = $OUTPUT->render_from_template('local_ai_reportcreator/testconnection_setting', [
+            'btnlabel' => $btnlabel,
+        ]);
 
-        $html .= <<<JS
-<script>
-(function () {
-    var btn = document.getElementById('local-ai-testconn-btn');
-    if (!btn) return;
-    btn.addEventListener('click', function () {
-        var result = document.getElementById('local-ai-testconn-result');
-        var urlField = document.querySelector('[name="s_local_ai_reportcreator_middleware_url"]');
-        var pwdField = document.querySelector('[name="s_local_ai_reportcreator_api_key"]');
-        var url = urlField ? urlField.value : '';
-        var pwd = pwdField ? pwdField.value : '';
-
-        btn.disabled = true;
-        result.className = 'align-middle ms-2 text-muted';
-        result.textContent = '{$msgtesting}';
-
-        var body = new URLSearchParams();
-        body.append('sesskey', '{$sesskey}');
-        body.append('middleware_url', url);
-        body.append('api_password', pwd);
-
-        fetch('{$testurl}', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-            body: body.toString()
-        })
-        .then(function (r) { return r.json(); })
-        .then(function (data) {
-            btn.disabled = false;
-            if (data.ok) {
-                result.textContent = '{$msgok}';
-                result.className = 'align-middle ms-2 text-success fw-bold';
-            } else {
-                result.textContent = '{$msgfail}: ' + (data.error || '{$httplabel} ' + data.http_code);
-                result.className = 'align-middle ms-2 text-danger';
-            }
-        })
-        .catch(function (e) {
-            btn.disabled = false;
-            result.textContent = '{$msgerror}: ' + e.message;
-            result.className = 'align-middle ms-2 text-danger';
-        });
-    });
-})();
-</script>
-JS;
+        $PAGE->requires->strings_for_js(
+            ['testingconnection', 'testconnection_success', 'testconnection_fail', 'httpstatuslabel', 'errorheading'],
+            'local_ai_reportcreator'
+        );
+        $PAGE->requires->js_call_amd('local_ai_reportcreator/testconnection', 'init', [
+            [
+                'testurl' => $testurl,
+                'sesskey' => sesskey(),
+            ],
+        ]);
 
         return $html;
     }
