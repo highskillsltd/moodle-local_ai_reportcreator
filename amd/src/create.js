@@ -238,7 +238,17 @@ define(['core/str', 'core/templates'], function(Str, Templates) {
             btn.disabled = true;
         }
 
-        document.getElementById('form-container').classList.add('d-none');
+        var formCol = document.getElementById('form-col');
+        if (formCol) {
+            formCol.classList.add('d-none');
+        }
+
+        var progressCol = document.getElementById('progress-col');
+        if (progressCol) {
+            progressCol.classList.remove('col-md-5');
+            progressCol.classList.add('col-md-12');
+        }
+
         document.getElementById('progress-panel').classList.remove('d-none');
 
         var state = {tokensTotal: 0, startedAt: Date.now(), errored: false};

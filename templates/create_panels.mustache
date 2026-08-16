@@ -21,13 +21,17 @@
     panel + error panel on the right that amd/src/create.js drives live
     while the report is being generated.
 
-    Classes required for JS: d-none (toggled by amd/src/create.js).
+    Classes required for JS: d-none, col-md-5, col-md-12 (toggled by
+    amd/src/create.js).
 
     Data attributes required for JS: none — amd/src/create.js binds to the
-    element ids below directly (#form-container, #progress-panel,
-    #progress-table, #error-panel, #error-message, and one row id per
-    entry in "progressrows"). These ids must not change without updating
-    amd/src/create.js to match.
+    element ids below directly (#form-col, #progress-col, #form-container,
+    #progress-panel, #progress-table, #error-panel, #error-message, and one
+    row id per entry in "progressrows"). These ids must not change without
+    updating amd/src/create.js to match. #form-col/#progress-col are the
+    actual grid columns — amd/src/create.js hides/resizes those (not just
+    their inner content) so the layout doesn't leave a blank reserved column
+    once the form is hidden.
 
     Context variables required for this template:
     * apinotification - pre-rendered $OUTPUT->notification() HTML, or empty string when the API is configured
@@ -50,12 +54,12 @@
 }}
 {{{apinotification}}}
 <div class="row g-3 align-items-start">
-    <div class="col-md-7">
+    <div class="col-md-7" id="form-col">
         <div id="form-container">
             {{{formhtml}}}
         </div>
     </div>
-    <div class="col-md-5">
+    <div class="col-md-5" id="progress-col">
         <div id="progress-panel" class="card mb-3 d-none">
             <div class="card-header fw-semibold">{{generatinglabel}}</div>
             <div class="card-body p-0">
