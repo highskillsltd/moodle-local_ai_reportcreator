@@ -32,6 +32,12 @@ require_capability('local/ai_reportcreator:manage', $context);
 $id     = required_param('id', PARAM_INT);
 $record = $DB->get_record('local_ai_reportcreator_rpts', ['id' => $id], '*', MUST_EXIST);
 
+\local_ai_reportcreator\event\report_viewed::create([
+    'context'  => $context,
+    'objectid' => $record->id,
+    'other'    => ['template_type' => $record->template_type],
+])->trigger();
+
 $PAGE->set_context($context);
 $PAGE->set_url(new moodle_url('/local/ai_reportcreator/view.php', ['id' => $id]));
 $PAGE->set_title(htmlspecialchars($record->name, ENT_QUOTES));

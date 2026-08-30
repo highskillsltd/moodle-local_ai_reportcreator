@@ -68,6 +68,11 @@ $responseraw = $curl->get($pingurl);
 $info        = $curl->get_info();
 $httpcode    = (int) ($info['http_code'] ?? 0);
 
+\local_ai_reportcreator\event\connection_tested::create([
+    'context' => $context,
+    'other'   => ['success' => $httpcode === 200, 'http_code' => $httpcode],
+])->trigger();
+
 if ($httpcode === 200) {
     echo json_encode(['ok' => true, 'http_code' => $httpcode]);
 } else {

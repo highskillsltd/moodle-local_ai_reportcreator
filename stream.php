@@ -29,6 +29,7 @@
 // phpcs:disable moodle.Files.RequireLogin.Missing -- login/capability checked below.
 
 require_once(__DIR__ . '/../../config.php');
+require_once(__DIR__ . '/lib.php');
 
 use local_ai_reportcreator\ApiClient;
 
@@ -68,6 +69,7 @@ if ($action === 'stream') {
     header('Content-Encoding: identity');
 
     if (!$client->is_configured()) {
+        local_ai_reportcreator_log_generation_failed($context, $templatetype, 'not_configured', 0);
         $msg = get_string('api_not_configured', 'local_ai_reportcreator');
         echo 'data: ' . json_encode(['event' => 'error', 'message' => $msg]) . "\n\n";
         flush();
@@ -75,6 +77,7 @@ if ($action === 'stream') {
     }
 
     if (trim($nlrequest) === '') {
+        local_ai_reportcreator_log_generation_failed($context, $templatetype, 'empty_request', 0);
         echo 'data: ' . json_encode(['event' => 'error', 'message' => get_string('nlrequest', 'local_ai_reportcreator')]) . "\n\n";
         flush();
         exit;
@@ -119,6 +122,13 @@ if ($action === 'stream') {
     try {
         $client->stream($nlrequest, 'moodle', $moodleversion, $templatetype, $streamcallback);
     } catch (\Throwable $e) {
+        $errortype = $e instanceof \moodle_exception ? $e->errorcode : get_class($e);
+        $httpcode  = 0;
+        if (preg_match('/HTTP (\d{3})/', (string) $e->getMessage(), $matches)) {
+            $httpcode = (int) $matches[1];
+        }
+        local_ai_reportcreator_log_generation_failed($context, $templatetype, $errortype, $httpcode);
+
         echo 'data: ' . json_encode(['event' => 'error', 'message' => $e->getMessage()]) . "\n\n";
         flush();
         exit;
@@ -182,6 +192,17 @@ if ($action === 'save') {
     $record->timemodified      = time();
 
     $newid = $DB->insert_record('local_ai_reportcreator_rpts', $record);
+
+    \local_ai_reportcreator\event\report_created::create([
+        'context'  => $context,
+        'objectid' => $newid,
+        'other'    => [
+            'name'          => $info['name'],
+            'template_type' => $info['template_type'],
+            'tokens_total'  => $tokenstotal,
+            'generation_ms' => $generationms,
+        ],
+    ])->trigger();
 
     echo json_encode([
         'id'      => $newid,

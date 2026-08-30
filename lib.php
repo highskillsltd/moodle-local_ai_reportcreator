@@ -74,3 +74,32 @@ function local_ai_reportcreator_run_report_sql(string $sql): array {
 
     return $rows;
 }
+
+/**
+ * Trigger a report_generation_failed event with structured metadata only.
+ *
+ * The raw middleware/cURL error text is deliberately not passed through, as it
+ * can contain the endpoint URL or a snippet of the response body.
+ *
+ * @param \context $context      The context the event is raised in.
+ * @param string   $templatetype The output type that was requested (report/dashboard/bar/...).
+ * @param string   $errortype    A short error identifier (moodle_exception code, class name,
+ *                                or 'not_configured' / 'empty_request').
+ * @param int      $httpcode     The HTTP status returned by the middleware, or 0 if unknown.
+ * @return void
+ */
+function local_ai_reportcreator_log_generation_failed(
+    \context $context,
+    string $templatetype,
+    string $errortype,
+    int $httpcode
+): void {
+    \local_ai_reportcreator\event\report_generation_failed::create([
+        'context' => $context,
+        'other'   => [
+            'template_type' => $templatetype,
+            'errortype'     => $errortype,
+            'http_code'     => $httpcode,
+        ],
+    ])->trigger();
+}

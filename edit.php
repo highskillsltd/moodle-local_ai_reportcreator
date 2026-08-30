@@ -61,6 +61,12 @@ if ($data = $form->get_data()) {
     $record->timemodified = time();
     $DB->update_record('local_ai_reportcreator_rpts', $record);
 
+    \local_ai_reportcreator\event\report_updated::create([
+        'context'  => $context,
+        'objectid' => $record->id,
+        'other'    => ['name' => $record->name],
+    ])->trigger();
+
     redirect(
         new moodle_url('/local/ai_reportcreator/view.php', ['id' => $id]),
         get_string('reportupdated', 'local_ai_reportcreator'),
