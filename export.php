@@ -41,6 +41,13 @@ if (!local_ai_reportcreator_validate_sql_readonly($record->sql_query)) {
 }
 
 $rows      = local_ai_reportcreator_run_report_sql($record->sql_query);
+
+\local_ai_reportcreator\event\report_exported::create([
+    'context'  => $context,
+    'objectid' => $record->id,
+    'other'    => ['format' => $format, 'rowcount' => count($rows)],
+])->trigger();
+
 $semantics = json_decode($record->semantics_json, true) ?: [];
 $firstrow  = !empty($rows) ? (array) reset($rows) : [];
 $keys      = array_keys($firstrow);

@@ -50,7 +50,17 @@ $PAGE->navbar->add(get_string('deletereport', 'local_ai_reportcreator'));
 $confirmed = optional_param('confirm', 0, PARAM_INT);
 
 if ($confirmed && confirm_sesskey()) {
+    $deletedid   = $record->id;
+    $deletedname = $record->name;
+
     $DB->delete_records('local_ai_reportcreator_rpts', ['id' => $id]);
+
+    \local_ai_reportcreator\event\report_deleted::create([
+        'context'  => $context,
+        'objectid' => $deletedid,
+        'other'    => ['name' => $deletedname],
+    ])->trigger();
+
     redirect(
         new moodle_url('/local/ai_reportcreator/index.php'),
         get_string('reportdeleted', 'local_ai_reportcreator'),
