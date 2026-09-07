@@ -48,7 +48,7 @@ if ($form->is_cancelled()) {
 }
 
 $PAGE->requires->strings_for_js(
-    ['running', 'done', 'unknownerror', 'savefailed', 'httpstatuslabel'],
+    ['running', 'done', 'unknownerror', 'savefailed', 'httpstatuslabel', 'tokencount'],
     'local_ai_reportcreator'
 );
 
