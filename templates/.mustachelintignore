@@ -1,0 +1,4 @@
+# report_rows renders bare <tr> rows that are substituted into a <table> inside
+# the stored template_html; it is not a standalone HTML document, so skip the
+# vnu HTML validation for it (Mustache syntax + example context are still checked).
+report_rows.mustache
