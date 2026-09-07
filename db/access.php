@@ -25,10 +25,24 @@
 defined('MOODLE_INTERNAL') || die();
 
 $capabilities = [
+    // Create, edit, delete and generate reports; view raw SQL; plugin settings.
     'local/ai_reportcreator:manage' => [
         'riskbitmask'  => RISK_PERSONAL | RISK_CONFIG,
         'captype'      => 'read',
-        'contextlevel' => CONTEXT_COURSECAT,
-        'archetypes'   => [],
+        'contextlevel' => CONTEXT_SYSTEM,
+        'archetypes'   => ['manager' => CAP_ALLOW],
+    ],
+
+    // View a rendered report and its data (view.php, embed.php). Report output can
+    // contain personal data, so administrators may revoke this from Authenticated
+    // user to restrict who can open reports; managers keep it either way.
+    'local/ai_reportcreator:view' => [
+        'riskbitmask'  => RISK_PERSONAL,
+        'captype'      => 'read',
+        'contextlevel' => CONTEXT_SYSTEM,
+        'archetypes'   => [
+            'user'    => CAP_ALLOW,
+            'manager' => CAP_ALLOW,
+        ],
     ],
 ];

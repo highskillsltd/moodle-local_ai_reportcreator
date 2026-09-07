@@ -15,7 +15,7 @@ To get your activation endpoint and API key, please [complete the setup process 
 
 - **Natural language → SQL** — describe your report in plain text; the AI writes the query.
 - **Multiple output types** — table report, stat-card dashboard, bar/line/pie/doughnut/radar charts.
-- **Embeddable** — every report gets an iframe embed code; viewers must be logged in to this Moodle site.
+- **Embeddable** — every report gets an iframe embed code; viewers must be logged in and hold `local/ai_reportcreator:view` (allowed for all authenticated users by default).
 - **Safe by design** — all generated SQL is validated as read-only before execution; write/DDL statements are always rejected.
 - **Hebrew (RTL) support** — full Hebrew translation included; Moodle handles RTL layout automatically.
 
@@ -98,31 +98,24 @@ Navigate to **AI Report Creator → Create new report** and fill in the descript
 
 1. Open any report and click **Embed** (or scroll to the embed panel at the bottom of the view page).
 2. Copy the `<iframe>` snippet and paste it into any webpage or Moodle HTML block.
-3. The embed endpoint (`embed.php`) requires the viewer to be logged in to this Moodle site.
+3. The embed endpoint (`embed.php`) requires the viewer to be logged in to this Moodle site **and** to hold `local/ai_reportcreator:view`.
 4. The iframe auto-resizes to its content height via `postMessage`.
 
 ---
 
 ## Permissions
 
-| Capability | Default roles |
-|---|---|
-| `local/ai_reportcreator:manage` |   |
+The plugin defines two capabilities and assigns them to standard roles — it does **not**
+create a role of its own.
 
-### Roles
+| Capability | Grants | Allowed by default for |
+|---|---|---|
+| `local/ai_reportcreator:manage` | Create, edit, delete and generate reports; view raw SQL; plugin settings | Manager (and site administrators) |
+| `local/ai_reportcreator:view` | Open a rendered report and its data (`view.php`, `embed.php`) | Authenticated user |
 
-The plugin automatically creates a custom role **"AI Report creator"** during installation or upgrade.
-
-| Property | Value |
-|---|---|
-| **Archetype** | Manager (defaults copied on creation) |
-| **Assignable context** | System, Category |
-| **Who can assign it** | Site administrators only |
-| **Default capability** | `local/ai_reportcreator:manage` = Allow |
-
-To verify or adjust role assignment permissions, go to:
-**Site administration → Users → Permissions → Define roles → AI Report creator → Allow role assignments**
-and confirm only the **Administrator** role is listed.
+Adjust these under **Site administration → Users → Permissions → Define roles**, or override
+them per role. Report output can contain personal data, so review who holds
+`local/ai_reportcreator:view` before publishing embeds widely.
 
 ---
 
