@@ -76,6 +76,88 @@ function local_ai_reportcreator_run_report_sql(string $sql): array {
 }
 
 /**
+ * Build the Mustache context for the local_ai_reportcreator/report_rows template.
+ *
+ * Each result row becomes one entry with a `cells` list holding the string value
+ * of every configured column, in column order. Missing values become ''. Values
+ * are only cast here — HTML escaping is left to the Mustache engine so it happens
+ * once, consistently, at render time.
+ *
+ * @param iterable $rows    Result rows (arrays or stdClass objects).
+ * @param array    $columns Column definitions from semantics; each needs a 'key'.
+ * @return array{rows: array<int, array{cells: string[]}>}
+ */
+function local_ai_reportcreator_build_row_context(iterable $rows, array $columns): array {
+    $context = ['rows' => []];
+    foreach ($rows as $row) {
+        $row   = (array) $row;
+        $cells = [];
+        foreach ($columns as $col) {
+            $cells[] = (string) ($row[$col['key']] ?? '');
+        }
+        $context['rows'][] = ['cells' => $cells];
+    }
+    return $context;
+}
+
+/**
+ * Render a stored report record into its final HTML output.
+ *
+ * Shared by view.php and embed.php so the placeholder substitution logic lives
+ * in one place. SQL-error handling is deliberately left to the caller, as the
+ * two pages present errors differently.
+ *
+ * Behaviour per template type:
+ *  - chart types (bar/line/pie/doughnut/radar): prepend a
+ *    `<script>window.__DATA__ = […];</script>` block to the stored template;
+ *  - report: replace `{{ROWS}}` with the rendered report_rows fragment;
+ *  - dashboard: as report, then replace each `{{STAT_<key>}}` with the matching
+ *    first-row value (escaped), or an em dash when absent;
+ *  - anything else: the stored template unchanged.
+ *
+ * @param \stdClass       $record    Report record (needs template_type, template_html).
+ * @param array           $rows      Result rows from the report SQL.
+ * @param array           $semantics Decoded semantics_json (columns, highlight_columns, …).
+ * @param \renderer_base  $output    Renderer used for the report_rows template.
+ * @return string Rendered HTML.
+ */
+function local_ai_reportcreator_render_report_output(
+    \stdClass $record,
+    array $rows,
+    array $semantics,
+    \renderer_base $output
+): string {
+    $templatetype = $record->template_type;
+
+    if (in_array($templatetype, ['bar', 'line', 'pie', 'doughnut', 'radar'], true)) {
+        $data = array_values(array_map(fn($r) => (array) $r, $rows));
+        return '<script>window.__DATA__ = ' . json_encode($data) . ';</script>' . "\n"
+            . $record->template_html;
+    }
+
+    if ($templatetype === 'report' || $templatetype === 'dashboard') {
+        $columns  = $semantics['columns'] ?? [];
+        $rowshtml = $output->render_from_template(
+            'local_ai_reportcreator/report_rows',
+            local_ai_reportcreator_build_row_context($rows, $columns)
+        );
+        $rendered = str_replace('{{ROWS}}', $rowshtml, $record->template_html);
+
+        if ($templatetype === 'dashboard') {
+            $firstrow = !empty($rows) ? (array) reset($rows) : [];
+            foreach ($semantics['highlight_columns'] ?? [] as $colkey) {
+                $val      = htmlspecialchars((string) ($firstrow[$colkey] ?? '—'), ENT_QUOTES);
+                $rendered = str_replace('{{STAT_' . $colkey . '}}', $val, $rendered);
+            }
+        }
+
+        return $rendered;
+    }
+
+    return $record->template_html;
+}
+
+/**
  * Trigger a report_generation_failed event with structured metadata only.
  *
  * The raw middleware/cURL error text is deliberately not passed through, as it

@@ -116,4 +116,131 @@ final class lib_test extends \advanced_testcase {
     public function test_empty_string_is_allowed(): void {
         $this->assertTrue(local_ai_reportcreator_validate_sql_readonly(''));
     }
+
+    /**
+     * build_row_context casts cell values to strings and preserves column order.
+     *
+     * @covers ::local_ai_reportcreator_build_row_context
+     */
+    public function test_build_row_context_casts_and_orders_cells(): void {
+        $rows    = [
+            (object) ['name' => 'Alice', 'score' => 42],
+            ['name' => 'Bob', 'score' => 0],
+        ];
+        $columns = [['key' => 'score'], ['key' => 'name']];
+
+        $context = local_ai_reportcreator_build_row_context($rows, $columns);
+
+        $this->assertSame(
+            ['rows' => [
+                ['cells' => ['42', 'Alice']],
+                ['cells' => ['0', 'Bob']],
+            ]],
+            $context
+        );
+    }
+
+    /**
+     * build_row_context substitutes '' for a column key missing from a row.
+     *
+     * @covers ::local_ai_reportcreator_build_row_context
+     */
+    public function test_build_row_context_missing_key_is_empty_string(): void {
+        $context = local_ai_reportcreator_build_row_context(
+            [['name' => 'Alice']],
+            [['key' => 'name'], ['key' => 'absent']]
+        );
+
+        $this->assertSame(['cells' => ['Alice', '']], $context['rows'][0]);
+    }
+
+    /**
+     * A 'report' record has {{ROWS}} replaced with escaped table rows.
+     *
+     * @covers ::local_ai_reportcreator_render_report_output
+     */
+    public function test_render_report_output_report_replaces_rows_and_escapes(): void {
+        global $PAGE;
+        $this->resetAfterTest();
+
+        $record = (object) [
+            'template_type' => 'report',
+            'template_html' => '<table><tbody>{{ROWS}}</tbody></table>',
+        ];
+        $rows      = [['col' => '<script>&"x"']];
+        $semantics = ['columns' => [['key' => 'col']]];
+
+        $output = local_ai_reportcreator_render_report_output($record, $rows, $semantics, $PAGE->get_renderer('core'));
+
+        $this->assertStringNotContainsString('{{ROWS}}', $output);
+        $this->assertStringContainsString('&lt;script&gt;&amp;&quot;x&quot;', $output);
+        $this->assertStringContainsString('<td>', $output);
+    }
+
+    /**
+     * A 'dashboard' record replaces {{ROWS}} and each {{STAT_*}} placeholder.
+     *
+     * @covers ::local_ai_reportcreator_render_report_output
+     */
+    public function test_render_report_output_dashboard_replaces_stats(): void {
+        global $PAGE;
+        $this->resetAfterTest();
+
+        $record = (object) [
+            'template_type' => 'dashboard',
+            'template_html' => '<b>{{STAT_total}}</b><i>{{STAT_missing}}</i>{{ROWS}}',
+        ];
+        $rows      = [['total' => 99, 'name' => 'a'], ['total' => 1, 'name' => 'b']];
+        $semantics = [
+            'columns'           => [['key' => 'name']],
+            'highlight_columns' => ['total', 'missing'],
+        ];
+
+        $output = local_ai_reportcreator_render_report_output($record, $rows, $semantics, $PAGE->get_renderer('core'));
+
+        $this->assertStringContainsString('<b>99</b>', $output);
+        $this->assertStringContainsString('<i>—</i>', $output);
+        $this->assertStringNotContainsString('{{ROWS}}', $output);
+    }
+
+    /**
+     * A chart record prepends the window.__DATA__ script to the stored template.
+     *
+     * @covers ::local_ai_reportcreator_render_report_output
+     */
+    public function test_render_report_output_chart_prepends_data_script(): void {
+        global $PAGE;
+        $this->resetAfterTest();
+
+        $record = (object) [
+            'template_type' => 'bar',
+            'template_html' => '<canvas></canvas>',
+        ];
+        $rows = [['label' => 'Jan', 'value' => 5]];
+
+        $output = local_ai_reportcreator_render_report_output($record, $rows, [], $PAGE->get_renderer('core'));
+
+        $this->assertStringStartsWith('<script>window.__DATA__ = ', $output);
+        $this->assertStringContainsString('[{"label":"Jan","value":5}]', $output);
+        $this->assertStringEndsWith('<canvas></canvas>', $output);
+    }
+
+    /**
+     * An unrecognised template type returns the stored template unchanged.
+     *
+     * @covers ::local_ai_reportcreator_render_report_output
+     */
+    public function test_render_report_output_unknown_type_is_verbatim(): void {
+        global $PAGE;
+        $this->resetAfterTest();
+
+        $record = (object) [
+            'template_type' => 'freeform',
+            'template_html' => '<p>Untouched {{ROWS}}</p>',
+        ];
+
+        $output = local_ai_reportcreator_render_report_output($record, [], [], $PAGE->get_renderer('core'));
+
+        $this->assertSame('<p>Untouched {{ROWS}}</p>', $output);
+    }
 }

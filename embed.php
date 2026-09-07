@@ -51,48 +51,10 @@ try {
     exit;
 }
 
-$semantics    = json_decode($record->semantics_json, true) ?: [];
-$templatetype = $record->template_type;
+$semantics = json_decode($record->semantics_json, true) ?: [];
 
-// Build rendered output — same logic as view.php.
-if (in_array($templatetype, ['bar', 'line', 'pie', 'doughnut', 'radar'], true)) {
-    $data   = array_values(array_map(fn($r) => (array) $r, $rows));
-    $output = '<script>window.__DATA__ = ' . json_encode($data) . ';</script>' . "\n"
-            . $record->template_html;
-} else if ($templatetype === 'report') {
-    $columns = $semantics['columns'] ?? [];
-    $tbody   = '';
-    foreach ($rows as $row) {
-        $row    = (array) $row;
-        $tbody .= '<tr>';
-        foreach ($columns as $col) {
-            $val    = htmlspecialchars((string) ($row[$col['key']] ?? ''), ENT_QUOTES);
-            $tbody .= "<td>{$val}</td>";
-        }
-        $tbody .= '</tr>';
-    }
-    $output = str_replace('{{ROWS}}', $tbody, $record->template_html);
-} else if ($templatetype === 'dashboard') {
-    $columns   = $semantics['columns'] ?? [];
-    $tbody     = '';
-    foreach ($rows as $row) {
-        $row    = (array) $row;
-        $tbody .= '<tr>';
-        foreach ($columns as $col) {
-            $val    = htmlspecialchars((string) ($row[$col['key']] ?? ''), ENT_QUOTES);
-            $tbody .= "<td>{$val}</td>";
-        }
-        $tbody .= '</tr>';
-    }
-    $firstrow = !empty($rows) ? (array) reset($rows) : [];
-    $output   = str_replace('{{ROWS}}', $tbody, $record->template_html);
-    foreach ($semantics['highlight_columns'] ?? [] as $colkey) {
-        $val    = htmlspecialchars((string) ($firstrow[$colkey] ?? '—'), ENT_QUOTES);
-        $output = str_replace('{{STAT_' . $colkey . '}}', $val, $output);
-    }
-} else {
-    $output = $record->template_html;
-}
+// Build rendered output — shared with view.php.
+$output = local_ai_reportcreator_render_report_output($record, $rows, $semantics, $OUTPUT);
 
 // Output bare HTML — allow embedding from any origin.
 header('Content-Type: text/html; charset=UTF-8');
