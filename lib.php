@@ -115,17 +115,20 @@ function local_ai_reportcreator_build_row_context(iterable $rows, array $columns
  *    first-row value (escaped), or an em dash when absent;
  *  - anything else: the stored template unchanged.
  *
- * @param \stdClass       $record    Report record (needs template_type, template_html).
- * @param array           $rows      Result rows from the report SQL.
- * @param array           $semantics Decoded semantics_json (columns, highlight_columns, …).
- * @param \renderer_base  $output    Renderer used for the report_rows template.
+ * @param \stdClass $record    Report record (needs template_type, template_html).
+ * @param array     $rows      Result rows from the report SQL.
+ * @param array     $semantics Decoded semantics_json (columns, highlight_columns, …).
+ * @param \renderer_base|\core\output\bootstrap_renderer $output Renderer for the
+ *      report_rows template — typically the global $OUTPUT, which is still the lazy
+ *      bootstrap_renderer proxy when view.php/embed.php call this (it forwards
+ *      render_from_template() to the real renderer), so no type declaration is used.
  * @return string Rendered HTML.
  */
 function local_ai_reportcreator_render_report_output(
     \stdClass $record,
     array $rows,
     array $semantics,
-    \renderer_base $output
+    $output
 ): string {
     $templatetype = $record->template_type;
 
