@@ -118,6 +118,7 @@ $string['testconnection_fail'] = 'Connection failed';
 $string['testconnection_success'] = 'Connection successful';
 $string['testingconnection'] = 'Testing…';
 $string['tokencompletion'] = 'Completion tokens';
+$string['tokencount'] = '{$a} tokens';
 $string['tokenprompt'] = 'Prompt tokens';
 $string['tokentotal'] = 'Total tokens';
 $string['type_bar'] = 'Chart — Bar';

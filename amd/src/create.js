@@ -149,9 +149,16 @@ define(['core/str', 'core/templates'], function(Str, Templates) {
                 break;
 
             case 'agent_done': {
-                var detail = formatElapsed(msg.elapsed_ms || 0) + ' · ' + (msg.tokens || 0) + ' tokens';
-                rowSetDone(rowId, detail);
-                state.tokensTotal += (msg.tokens || 0);
+                var tokens = msg.tokens || 0;
+                var elapsed = formatElapsed(msg.elapsed_ms || 0);
+                state.tokensTotal += tokens;
+                Str.get_string('tokencount', 'local_ai_reportcreator', tokens).then(function(tokentext) {
+                    rowSetDone(rowId, elapsed + ' · ' + tokentext);
+                    return null;
+                }).catch(function() {
+                    // Fall back to an English literal if the string cannot be resolved.
+                    rowSetDone(rowId, elapsed + ' · ' + tokens + ' tokens');
+                });
                 break;
             }
 

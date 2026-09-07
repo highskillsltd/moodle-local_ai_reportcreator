@@ -118,6 +118,7 @@ $string['testconnection_fail'] = 'החיבור נכשל';
 $string['testconnection_success'] = 'החיבור הצליח';
 $string['testingconnection'] = 'בודק…';
 $string['tokencompletion'] = 'טוקנים של התשובה';
+$string['tokencount'] = '{$a} טוקנים';
 $string['tokenprompt'] = 'טוקנים של הבקשה';
 $string['tokentotal'] = 'סה"כ טוקנים';
 $string['type_bar'] = 'תרשים — עמודות';
