@@ -138,6 +138,11 @@ class ApiClient {
         $options = [
             'CURLOPT_TIMEOUT'        => $this->streamtimeout,
             'CURLOPT_RETURNTRANSFER' => false,
+            'CURLOPT_FOLLOWLOCATION' => true,
+            // Moodle's curl wrapper defaults SSL verification off; restore it
+            // explicitly and only relax it for an admin-configured plain-http:// URL.
+            'CURLOPT_SSL_VERIFYPEER' => !$this->is_insecure_url(),
+            'CURLOPT_SSL_VERIFYHOST' => $this->is_insecure_url() ? 0 : 2,
             // Forward body only on 2xx; buffer it on error so we can report it.
             'CURLOPT_WRITEFUNCTION'  => function (
                 $ch,
@@ -162,14 +167,6 @@ class ApiClient {
                 return strlen($data);
             },
         ];
-
-        if ($this->is_insecure_url()) {
-            $options['CURLOPT_SSL_VERIFYPEER'] = false;
-            $options['CURLOPT_SSL_VERIFYHOST'] = 0;
-        } else {
-            $options['CURLOPT_SSL_VERIFYPEER'] = true;
-            $options['CURLOPT_SSL_VERIFYHOST'] = 2;
-        }
 
         $curl->post($url, $postfields, $options);
 

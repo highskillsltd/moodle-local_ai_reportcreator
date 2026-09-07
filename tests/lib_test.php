@@ -35,6 +35,7 @@ require_once(__DIR__ . '/../lib.php');
  * @copyright  2026 Highskills and more <info@highskills.co.il>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @covers ::local_ai_reportcreator_validate_sql_readonly
+ * @covers ::local_ai_reportcreator_derive_ping_url
  */
 final class lib_test extends \advanced_testcase {
     /**
@@ -242,5 +243,33 @@ final class lib_test extends \advanced_testcase {
         $output = local_ai_reportcreator_render_report_output($record, [], [], $PAGE->get_renderer('core'));
 
         $this->assertSame('<p>Untouched {{ROWS}}</p>', $output);
+    }
+
+    /**
+     * derive_ping_url replaces the final path segment with "ping".
+     *
+     * @dataProvider ping_url_provider
+     * @param string $input    Configured middleware URL.
+     * @param string $expected Expected derived ping URL.
+     */
+    public function test_derive_ping_url(string $input, string $expected): void {
+        $this->assertSame($expected, local_ai_reportcreator_derive_ping_url($input));
+    }
+
+    /**
+     * Data provider for test_derive_ping_url.
+     *
+     * @return array<string, array{0: string, 1: string}>
+     */
+    public static function ping_url_provider(): array {
+        return [
+            'nested path'        => ['https://h/api/v1/report-creator', 'https://h/api/v1/ping'],
+            'trailing slash'     => ['https://h/api/v1/report-creator/', 'https://h/api/v1/ping'],
+            'single segment'     => ['https://h/report-creator', 'https://h/ping'],
+            'plain http'         => ['http://h/api/report-creator', 'http://h/api/ping'],
+            // Documents current behaviour for a bare origin (no path): the "//" is
+            // treated as the last separator. Asserted so any future change is deliberate.
+            'bare origin'        => ['https://h', 'https://ping'],
+        ];
     }
 }
