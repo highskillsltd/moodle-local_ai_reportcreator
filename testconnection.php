@@ -27,6 +27,7 @@
 define('AJAX_SCRIPT', true);
 
 require_once(__DIR__ . '/../../config.php');
+require_once(__DIR__ . '/lib.php');
 require_once($CFG->libdir . '/filelib.php');
 
 require_login();
@@ -34,6 +35,11 @@ require_sesskey();
 
 $context = context_system::instance();
 require_capability('local/ai_reportcreator:manage', $context);
+
+// The middleware probe below can take several seconds (or hang until timeout)
+// on an unreachable host — release the session write lock so the admin's other
+// browser tabs are not blocked for the duration.
+\core\session\manager::write_close();
 
 $middlewareurl = required_param('middleware_url', PARAM_URL);
 $apipassword   = required_param('api_password', PARAM_ALPHANUMEXT);
@@ -49,22 +55,25 @@ if (empty(trim($middlewareurl))) {
     exit;
 }
 
-// Derive ping URL: replace the last path segment (task code, e.g. "report-creator")
-// with "ping" — matches the middleware's GET /api/v1/{tenant_id}/ping route.
+// Derive ping URL from the configured endpoint (task-code segment → "ping").
 $trimmedurl = rtrim($middlewareurl, '/');
-$lastslash  = strrpos($trimmedurl, '/');
-if ($lastslash !== false) {
-    $pingurl = substr($trimmedurl, 0, $lastslash) . '/ping';
-} else {
-    $pingurl = $trimmedurl . '/ping';
-}
+$pingurl    = local_ai_reportcreator_derive_ping_url($middlewareurl);
+$insecure   = stripos($trimmedurl, 'http://') === 0;
 
 $curl = new curl();
 $curl->setHeader([
     'Authorization: Bearer ' . $apipassword,
 ]);
 
-$responseraw = $curl->get($pingurl);
+// Moodle's curl wrapper defaults SSL verification off; restore it explicitly and
+// only relax it for an admin-configured plain-http:// endpoint. Cap the wait so a
+// dead host fails the "test" button quickly rather than after the wrapper default.
+$responseraw = $curl->get($pingurl, [], [
+    'CURLOPT_SSL_VERIFYPEER' => !$insecure,
+    'CURLOPT_SSL_VERIFYHOST' => $insecure ? 0 : 2,
+    'CURLOPT_TIMEOUT'        => 10,
+    'CURLOPT_FOLLOWLOCATION' => true,
+]);
 $info        = $curl->get_info();
 $httpcode    = (int) ($info['http_code'] ?? 0);
 

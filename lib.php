@@ -158,6 +158,25 @@ function local_ai_reportcreator_render_report_output(
 }
 
 /**
+ * Derive the middleware "ping" URL from a configured endpoint URL.
+ *
+ * Replaces the last path segment (the task code, e.g. "report-creator") with
+ * "ping", matching the middleware's GET /api/{version}/{tenant}/ping route.
+ * A trailing slash on the input is ignored.
+ *
+ * @param string $middlewareurl The configured middleware endpoint URL.
+ * @return string The corresponding ping URL.
+ */
+function local_ai_reportcreator_derive_ping_url(string $middlewareurl): string {
+    $trimmedurl = rtrim($middlewareurl, '/');
+    $lastslash  = strrpos($trimmedurl, '/');
+    if ($lastslash !== false) {
+        return substr($trimmedurl, 0, $lastslash) . '/ping';
+    }
+    return $trimmedurl . '/ping';
+}
+
+/**
  * Trigger a report_generation_failed event with structured metadata only.
  *
  * The raw middleware/cURL error text is deliberately not passed through, as it
