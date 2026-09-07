@@ -17,7 +17,8 @@
 /**
  * Embed page — outputs a bare HTML document (no Moodle chrome) suitable for iframes.
  *
- * Access requires a logged-in Moodle session.
+ * Access requires a logged-in Moodle session and the local/ai_reportcreator:view
+ * capability (system context).
  *
  * @package    local_ai_reportcreator
  * @copyright  2026 Highskills and more <info@highskills.co.il>
@@ -28,6 +29,8 @@ require_once(__DIR__ . '/../../config.php');
 require_once(__DIR__ . '/lib.php');
 
 require_login();
+$context = context_system::instance();
+require_capability('local/ai_reportcreator:view', $context);
 
 $id     = required_param('id', PARAM_INT);
 $record = $DB->get_record('local_ai_reportcreator_rpts', ['id' => $id], '*', MUST_EXIST);

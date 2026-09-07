@@ -32,23 +32,22 @@ function xmldb_local_ai_reportcreator_upgrade($oldversion) {
     global $DB;
 
     if ($oldversion < 2024010104) {
-        if (!$DB->record_exists('role', ['shortname' => 'ai_reportcreator'])) {
-            $roleid = create_role(
-                get_string('role:ai_reportcreator', 'local_ai_reportcreator'),
-                'ai_reportcreator',
-                get_string('role:ai_reportcreator_desc', 'local_ai_reportcreator'),
-                'manager'
-            );
+        // This step used to create a bundled "ai_reportcreator" role. The plugin no
+        // longer ships that role (capabilities now sit on standard archetypes), and the
+        // 2024010107 step below removes it, so there is nothing to do here.
+        upgrade_plugin_savepoint(true, 2024010104, 'local', 'ai_reportcreator');
+    }
 
-            reset_role_capabilities($roleid);
-
-            set_role_contextlevels($roleid, [CONTEXT_SYSTEM, CONTEXT_COURSECAT]);
-
-            $context = context_system::instance();
-            assign_capability('local/ai_reportcreator:manage', CAP_ALLOW, $roleid, $context->id, true);
+    if ($oldversion < 2024010107) {
+        // Drop the bundled "ai_reportcreator" role. local/ai_reportcreator:manage is now
+        // granted to the manager archetype and local/ai_reportcreator:view to the
+        // authenticated user archetype, so the dedicated role is no longer needed.
+        $role = $DB->get_record('role', ['shortname' => 'ai_reportcreator']);
+        if ($role) {
+            delete_role($role->id);
         }
 
-        upgrade_plugin_savepoint(true, 2024010104, 'local', 'ai_reportcreator');
+        upgrade_plugin_savepoint(true, 2024010107, 'local', 'ai_reportcreator');
     }
 
     return true;
