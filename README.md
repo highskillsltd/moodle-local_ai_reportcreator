@@ -101,10 +101,6 @@ Navigate to **AI Report Creator → Create new report** and fill in the descript
 3. The embed endpoint (`embed.php`) requires the viewer to be logged in to this Moodle site **and** to hold `local/ai_reportcreator:view`.
 4. The iframe auto-resizes to its content height via `postMessage`.
 
-There is no public or per-report sharing mode. To stop ordinary users from opening
-reports, remove `local/ai_reportcreator:view` from the **Authenticated user** role
-(Site administration → Users → Permissions → Define roles).
-
 ---
 
 ## Permissions
@@ -120,11 +116,6 @@ create a role of its own.
 Adjust these under **Site administration → Users → Permissions → Define roles**, or override
 them per role. Report output can contain personal data, so review who holds
 `local/ai_reportcreator:view` before publishing embeds widely.
-
-> **Upgrading from an earlier version:** the bundled **"AI Report creator"** role is removed
-> on upgrade. Site managers are unaffected (`:manage` is now a Manager capability). If you
-> had assigned only that role to some users, grant `local/ai_reportcreator:manage` to a role
-> they hold.
 
 ---
 
